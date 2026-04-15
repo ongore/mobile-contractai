@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "ContractFlow",
+    "slug": "contractflow",
+    "version": "1.0.0",
+    "ios": {
+      "bundleIdentifier": "com.anonymous.contractflow"
+    },
+    "android": {
+      "package": "com.anonymous.contractflow"
+    }
+  }
+}

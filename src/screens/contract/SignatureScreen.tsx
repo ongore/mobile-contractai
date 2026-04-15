@@ -1,0 +1,365 @@
+import React, {useRef, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RouteProp} from '@react-navigation/native';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import SignatureCanvas, {SignatureViewRef} from 'react-native-signature-canvas';
+import {MainStackParamList} from '@/navigation/types';
+import {useSaveSignature} from '@/hooks/useContracts';
+import {colors} from '@/theme/colors';
+import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {fontSize, fontWeight} from '@/theme/typography';
+
+type Props = {
+  navigation: NativeStackNavigationProp<MainStackParamList, 'Signature'>;
+  route: RouteProp<MainStackParamList, 'Signature'>;
+};
+
+export default function SignatureScreen({navigation, route}: Props) {
+  const {contractId} = route.params;
+  const signatureRef = useRef<SignatureViewRef>(null);
+  const [hasSignature, setHasSignature] = useState(false);
+  const saveSignature = useSaveSignature();
+
+  const handleSignatureBegin = () => {
+    setHasSignature(true);
+  };
+
+  const handleClear = () => {
+    signatureRef.current?.clearSignature();
+    setHasSignature(false);
+  };
+
+  const handleConfirm = () => {
+    signatureRef.current?.readSignature();
+  };
+
+  const handleSignatureOK = async (signature: string) => {
+    if (!signature) {
+      Alert.alert('Empty Signature', 'Please draw your signature before confirming.');
+      return;
+    }
+
+    // Extract base64 from data URI if needed
+    const base64 = signature.includes('base64,')
+      ? signature.split('base64,')[1]
+      : signature;
+
+    try {
+      await saveSignature.mutateAsync({
+        id: contractId,
+        signatureBase64: base64,
+      });
+      navigation.navigate('SendLink', {contractId});
+    } catch (err: any) {
+      Alert.alert(
+        'Signature Failed',
+        err?.response?.data?.message ||
+          'Failed to save signature. Please try again.',
+        [{text: 'OK'}],
+      );
+    }
+  };
+
+  const webStyle = `
+    .m-signature-pad {
+      box-shadow: none;
+      border: none;
+      margin: 0;
+    }
+    .m-signature-pad--body {
+      border: none;
+    }
+    .m-signature-pad--footer {
+      display: none;
+    }
+    body, html {
+      background-color: #F8F9FF;
+      height: 100%;
+      margin: 0;
+    }
+    canvas {
+      border-radius: 12px;
+    }
+  `;
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}>
+          <Icon name="close" size={22} color={colors.text.secondary} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Sign Contract</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
+      {/* Body */}
+      <View style={styles.body}>
+        {/* Instructions */}
+        <View style={styles.instructions}>
+          <View style={styles.instructionIcon}>
+            <Icon name="draw" size={22} color={colors.accent} />
+          </View>
+          <View style={styles.instructionText}>
+            <Text style={styles.instructionTitle}>Draw your signature</Text>
+            <Text style={styles.instructionSub}>
+              Sign in the box below using your finger. Your signature will be
+              applied to the contract.
+            </Text>
+          </View>
+        </View>
+
+        {/* Signature pad */}
+        <View style={styles.signatureWrapper}>
+          <View style={styles.signatureLabel}>
+            <Icon name="draw-pen" size={14} color={colors.muted} />
+            <Text style={styles.signatureLabelText}>Sign here</Text>
+          </View>
+          <SignatureCanvas
+            ref={signatureRef}
+            onOK={handleSignatureOK}
+            onBegin={handleSignatureBegin}
+            onEmpty={() => setHasSignature(false)}
+            webStyle={webStyle}
+            backgroundColor="#F8F9FF"
+            penColor={colors.primary}
+            style={styles.signatureCanvas}
+            descriptionText=""
+            clearText=""
+            confirmText=""
+            autoClear={false}
+          />
+          <View style={styles.signatureLine}>
+            <View style={styles.signatureLineBar} />
+            <Text style={styles.signatureLineLabel}>x</Text>
+          </View>
+        </View>
+
+        {/* Legal note */}
+        <View style={styles.legalNote}>
+          <Icon name="shield-check-outline" size={14} color={colors.muted} />
+          <Text style={styles.legalNoteText}>
+            By confirming, you agree this signature is legally binding under
+            applicable e-signature laws.
+          </Text>
+        </View>
+      </View>
+
+      {/* Footer buttons */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={handleClear}
+          disabled={saveSignature.isPending}>
+          <Icon name="eraser" size={18} color={colors.text.secondary} />
+          <Text style={styles.clearButtonText}>Clear</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.confirmButton,
+            (!hasSignature || saveSignature.isPending) &&
+              styles.confirmButtonDisabled,
+          ]}
+          onPress={handleConfirm}
+          disabled={!hasSignature || saveSignature.isPending}
+          activeOpacity={0.9}>
+          {saveSignature.isPending ? (
+            <View style={styles.loadingRow}>
+              <ActivityIndicator color={colors.white} size="small" />
+              <Text style={styles.confirmButtonText}>Saving...</Text>
+            </View>
+          ) : (
+            <>
+              <Icon name="check-circle" size={18} color={colors.white} />
+              <Text style={styles.confirmButtonText}>Confirm Signature</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[4],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.gray100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: colors.primary,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+  },
+  headerSpacer: {
+    width: 36,
+  },
+  body: {
+    flex: 1,
+    padding: spacing[5],
+    gap: spacing[5],
+  },
+  instructions: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[3],
+  },
+  instructionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.accentLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  instructionText: {
+    flex: 1,
+  },
+  instructionTitle: {
+    color: colors.primary,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+    marginBottom: 4,
+  },
+  instructionSub: {
+    color: colors.text.secondary,
+    fontSize: fontSize.sm,
+    lineHeight: 18,
+  },
+  signatureWrapper: {
+    flex: 1,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1.5,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface,
+    overflow: 'hidden',
+    position: 'relative',
+    minHeight: 220,
+  },
+  signatureLabel: {
+    position: 'absolute',
+    top: spacing[3],
+    left: spacing[4],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
+    zIndex: 10,
+  },
+  signatureLabelText: {
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  signatureCanvas: {
+    flex: 1,
+    backgroundColor: colors.surface,
+  },
+  signatureLine: {
+    position: 'absolute',
+    bottom: spacing[8],
+    left: spacing[6],
+    right: spacing[6],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  signatureLineBar: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border.default,
+  },
+  signatureLineLabel: {
+    color: colors.muted,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+  },
+  legalNote: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[2],
+  },
+  legalNoteText: {
+    flex: 1,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    lineHeight: 16,
+  },
+  footer: {
+    flexDirection: 'row',
+    gap: spacing[3],
+    padding: spacing[5],
+    borderTopWidth: 1,
+    borderTopColor: colors.border.light,
+  },
+  clearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[4],
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.gray100,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+  },
+  clearButtonText: {
+    color: colors.text.secondary,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.medium,
+  },
+  confirmButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    backgroundColor: colors.accent,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing[4],
+    ...shadow.md,
+  },
+  confirmButtonDisabled: {
+    opacity: 0.5,
+  },
+  confirmButtonText: {
+    color: colors.white,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+});
