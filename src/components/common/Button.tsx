@@ -10,15 +10,10 @@ import {
   View,
 } from 'react-native';
 import {colors} from '@/theme/colors';
-import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'outline'
-  | 'ghost'
-  | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
@@ -74,7 +69,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'primary' || variant === 'danger' ? colors.white : colors.accent}
+          color={variant === 'primary' || variant === 'danger' || variant === 'secondary' ? colors.white : colors.accentMid}
         />
       ) : (
         <View style={styles.inner}>
@@ -92,7 +87,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.xl,
   },
   inner: {
     flexDirection: 'row',
@@ -109,29 +104,38 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
 
   // Variants
   variant_primary: {
-    backgroundColor: colors.accent,
-    ...shadow.md,
+    backgroundColor: '#3B82F6',
+    shadowColor: '#3B82F6',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
   },
   variant_secondary: {
-    backgroundColor: colors.primary,
-    ...shadow.sm,
+    backgroundColor: 'rgba(15,23,42,0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
   },
   variant_outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: colors.accent,
+    borderColor: '#3B82F6',
   },
   variant_ghost: {
     backgroundColor: 'transparent',
   },
   variant_danger: {
-    backgroundColor: colors.danger,
-    ...shadow.sm,
+    backgroundColor: '#EF4444',
+    shadowColor: '#EF4444',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
 
   // Sizes
@@ -144,25 +148,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
   },
   size_lg: {
-    paddingVertical: spacing[4],
+    paddingVertical: spacing[4] + 2,
     paddingHorizontal: spacing[6],
   },
 
   // Labels
   label: {
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.1,
   },
   label_primary: {
     color: colors.white,
   },
   label_secondary: {
-    color: colors.white,
+    color: colors.text.primary,
   },
   label_outline: {
-    color: colors.accent,
+    color: '#3B82F6',
   },
   label_ghost: {
-    color: colors.accent,
+    color: '#3B82F6',
   },
   label_danger: {
     color: colors.white,

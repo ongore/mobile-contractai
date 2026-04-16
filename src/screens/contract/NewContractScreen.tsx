@@ -4,253 +4,273 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, initialWindowMetrics} from 'react-native-safe-area-context';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
+import {LinearGradient} from 'expo-linear-gradient';
 import {MainStackParamList} from '@/navigation/types';
 import {InputMethod} from '@/types/contract';
-import {colors} from '@/theme/colors';
-import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
 type Props = {
   navigation: NativeStackNavigationProp<MainStackParamList, 'NewContract'>;
 };
 
-interface InputCard {
-  method: InputMethod;
-  icon: string;
-  iconBg: string;
-  iconColor: string;
-  title: string;
-  subtitle: string;
-  popular?: boolean;
-}
+const {width} = Dimensions.get('window');
+const CARD_GAP = 12;
+const HORIZ_PAD = 20;
+const HALF = (width - HORIZ_PAD * 2 - CARD_GAP) / 2;
 
-const INPUT_CARDS: InputCard[] = [
-  {
-    method: 'screenshot',
-    icon: 'image-outline',
-    iconBg: '#EEF2FF',
-    iconColor: colors.accent,
-    title: 'Upload Screenshot',
-    subtitle: 'Use an existing screenshot of your deal or chat',
-    popular: true,
-  },
-  {
-    method: 'text',
-    icon: 'pencil-outline',
-    iconBg: '#ECFDF5',
-    iconColor: colors.success,
-    title: 'Paste Text',
-    subtitle: 'Describe the agreement or paste terms manually',
-  },
-  {
-    method: 'invoice',
-    icon: 'file-document-outline',
-    iconBg: '#FFFBEB',
-    iconColor: colors.warning,
-    title: 'Import Invoice',
-    subtitle: 'Import a PDF invoice to turn into a contract',
-  },
-  {
-    method: 'camera',
-    icon: 'camera-outline',
-    iconBg: '#FEF2F2',
-    iconColor: colors.danger,
-    title: 'Scan Document',
-    subtitle: 'Point your camera at any printed document',
-  },
-];
+const GLASS = {
+  backgroundColor: 'rgba(15,23,42,0.72)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.08)',
+  borderRadius: borderRadius['2xl'] ?? 20,
+} as const;
+
+const TOP_INSET = initialWindowMetrics?.insets.top ?? 44;
 
 export default function NewContractScreen({navigation}: Props) {
-  const handleSelectMethod = (method: InputMethod) => {
+  const go = (method: InputMethod) =>
     navigation.navigate('InputMethod', {method});
-  };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.goBack()}>
-          <Icon name="close" size={22} color={colors.text.secondary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Contract</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+    <LinearGradient
+      colors={['#0D2247', '#020617', '#150D38']}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 1}}
+      style={s.root}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}>
-        {/* Subtitle */}
-        <View style={styles.intro}>
-          <Text style={styles.introTitle}>How do you want to start?</Text>
-          <Text style={styles.introSubtitle}>
-            Our AI will extract the key details and generate a professional
-            contract for you.
-          </Text>
+      <SafeAreaView style={s.safe} edges={['bottom']}>
+        {/* Header */}
+        <View style={[s.header, {paddingTop: TOP_INSET + 14}]}>
+          <TouchableOpacity style={s.closeBtn} onPress={() => navigation.goBack()}>
+            <Icon name="close" size={19} color="rgba(255,255,255,0.55)" />
+          </TouchableOpacity>
+          <Text style={s.headerTitle}>New Contract</Text>
+          <View style={{width: 36}} />
         </View>
 
-        {/* Method Cards */}
-        <View style={styles.cards}>
-          {INPUT_CARDS.map(card => (
+        <View style={s.body}>
+          {/* ── Hero card — Upload / Scan ───────────────────────────────── */}
+          <TouchableOpacity
+            style={[GLASS, s.heroCard]}
+            onPress={() => go('screenshot')}
+            activeOpacity={0.82}>
+
+            {/* bg shimmer */}
+            <LinearGradient
+              colors={['rgba(59,130,246,0.18)', 'transparent']}
+              start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+              style={StyleSheet.absoluteFill}
+              pointerEvents="none"
+            />
+
+            <View style={s.heroBadge}>
+              <Text style={s.heroBadgeText}>RECOMMENDED</Text>
+            </View>
+
+            <LinearGradient
+              colors={['#3B82F6', '#8B5CF6']}
+              start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+              style={s.heroIcon}>
+              <Icon name="image-search-outline" size={30} color="#fff" />
+            </LinearGradient>
+
+            <Text style={s.heroTitle}>Upload Image or PDF</Text>
+            <Text style={s.heroSub}>
+              Pick an image or import a PDF — our AI reads it instantly and
+              drafts a professional contract for you.
+            </Text>
+
+            <View style={s.heroArrow}>
+              <Icon name="arrow-right" size={16} color="#3B82F6" />
+            </View>
+          </TouchableOpacity>
+
+          {/* ── Row: Paste & Draft + Scan Document ─────────────────────── */}
+          <View style={s.row}>
+            {/* Paste & Draft */}
             <TouchableOpacity
-              key={card.method}
-              style={styles.card}
-              onPress={() => handleSelectMethod(card.method)}
-              activeOpacity={0.85}>
-              {card.popular && (
-                <View style={styles.popularBadge}>
-                  <Text style={styles.popularBadgeText}>Most Popular</Text>
-                </View>
-              )}
-              <View style={[styles.cardIcon, {backgroundColor: card.iconBg}]}>
-                <Icon name={card.icon} size={28} color={card.iconColor} />
-              </View>
-              <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-              </View>
-              <Icon
-                name="chevron-right"
-                size={20}
-                color={colors.border.default}
+              style={[GLASS, s.halfCard]}
+              onPress={() => go('text')}
+              activeOpacity={0.82}>
+              <LinearGradient
+                colors={['rgba(139,92,246,0.18)', 'transparent']}
+                start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
               />
+              <View style={[s.halfIconWrap, {backgroundColor: 'rgba(139,92,246,0.14)'}]}>
+                <Icon name="clipboard-text-outline" size={20} color="#8B5CF6" />
+              </View>
+              <Text style={s.halfTitle}>Paste{'\n'}&amp; Draft</Text>
+              <Text style={s.halfSub}>MANUAL INPUT</Text>
             </TouchableOpacity>
-          ))}
-        </View>
 
-        {/* Bottom note */}
-        <View style={styles.note}>
-          <Icon name="shield-check-outline" size={16} color={colors.muted} />
-          <Text style={styles.noteText}>
-            Your data is processed securely and never stored without your
-            permission.
-          </Text>
+            {/* Scan Document (camera) */}
+            <TouchableOpacity
+              style={[GLASS, s.halfCard]}
+              onPress={() => go('camera')}
+              activeOpacity={0.82}>
+              <LinearGradient
+                colors={['rgba(217,70,239,0.18)', 'transparent']}
+                start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+              />
+              <View style={[s.halfIconWrap, {backgroundColor: 'rgba(217,70,239,0.14)'}]}>
+                <Icon name="camera-outline" size={20} color="#D946EF" />
+              </View>
+              <Text style={s.halfTitle}>Scan{'\n'}Document</Text>
+              <Text style={s.halfSub}>CAMERA</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ── Security note ─────────────────────────────────────────── */}
+          <View style={s.note}>
+            <Icon name="shield-check-outline" size={13} color="rgba(148,163,184,0.60)" />
+            <Text style={s.noteText}>
+              Processed securely — never stored without your permission.
+            </Text>
+          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background.primary,
-  },
+const s = StyleSheet.create({
+  root: {flex: 1},
+  safe: {flex: 1},
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing[5],
-    paddingVertical: spacing[4],
+    paddingHorizontal: HORIZ_PAD,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
   },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.gray100,
-    alignItems: 'center',
-    justifyContent: 'center',
+  closeBtn: {
+    width: 36, height: 36, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)',
+    alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
+    letterSpacing: -0.3,
   },
-  headerSpacer: {
-    width: 36,
+
+  body: {
+    flex: 1,
+    paddingHorizontal: HORIZ_PAD,
+    paddingTop: 20,
+    gap: CARD_GAP,
   },
-  content: {
-    paddingHorizontal: spacing[5],
-    paddingBottom: spacing[8],
+
+  // Hero card
+  heroCard: {
+    padding: 22,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  intro: {
-    paddingTop: spacing[6],
-    marginBottom: spacing[6],
+  heroBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(59,130,246,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.35)',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginBottom: 18,
   },
-  introTitle: {
-    color: colors.primary,
+  heroBadgeText: {
+    color: '#60A5FA',
+    fontSize: 9,
+    fontWeight: fontWeight.bold,
+    letterSpacing: 1,
+  },
+  heroIcon: {
+    width: 58, height: 58, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+    marginBottom: 18,
+    shadowColor: '#3B82F6',
+    shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.5, shadowRadius: 20,
+  },
+  heroTitle: {
+    color: '#FFFFFF',
     fontSize: fontSize['2xl'],
     fontWeight: fontWeight.bold,
     letterSpacing: -0.5,
-    marginBottom: spacing[2],
+    marginBottom: 8,
   },
-  introSubtitle: {
-    color: colors.text.secondary,
+  heroSub: {
+    color: 'rgba(148,163,184,0.80)',
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    marginBottom: 18,
+  },
+  heroArrow: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(59,130,246,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.25)',
+    borderRadius: 10,
+    padding: 8,
+  },
+
+  // Row of two equal cards
+  row: {
+    flexDirection: 'row',
+    gap: CARD_GAP,
+  },
+  halfCard: {
+    width: HALF,
+    padding: 18,
+    overflow: 'hidden',
+    gap: 10,
+  },
+  halfIconWrap: {
+    width: 42, height: 42, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  halfTitle: {
+    color: '#FFFFFF',
     fontSize: fontSize.base,
+    fontWeight: fontWeight.bold,
+    letterSpacing: -0.2,
     lineHeight: 22,
   },
-  cards: {
-    gap: spacing[3],
-    marginBottom: spacing[6],
+  halfSub: {
+    color: 'rgba(100,116,139,0.90)',
+    fontSize: 9,
+    fontWeight: fontWeight.bold,
+    letterSpacing: 0.9,
+    textTransform: 'uppercase',
   },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[4],
-    backgroundColor: colors.background.primary,
-    borderRadius: borderRadius.xl,
-    padding: spacing[4],
-    borderWidth: 1.5,
-    borderColor: colors.border.light,
-    ...shadow.sm,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  cardIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardText: {
-    flex: 1,
-  },
-  cardTitle: {
-    color: colors.primary,
-    fontSize: fontSize.base,
-    fontWeight: fontWeight.semibold,
-    marginBottom: 2,
-  },
-  cardSubtitle: {
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    lineHeight: 18,
-  },
-  popularBadge: {
-    position: 'absolute',
-    top: spacing[3],
-    right: spacing[3],
-    backgroundColor: colors.accentLight,
-    paddingHorizontal: spacing[2],
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  popularBadgeText: {
-    color: colors.accent,
-    fontSize: 10,
-    fontWeight: fontWeight.semibold,
-    letterSpacing: 0.3,
-  },
+
+  // Security note
   note: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing[2],
-    padding: spacing[4],
-    backgroundColor: colors.gray50,
-    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 4,
+    marginTop: 4,
   },
   noteText: {
     flex: 1,
-    color: colors.muted,
+    color: 'rgba(100,116,139,0.80)',
     fontSize: fontSize.xs,
     lineHeight: 16,
   },

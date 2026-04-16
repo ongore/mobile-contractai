@@ -2,7 +2,6 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {MainStackParamList} from './types';
 import HomeTabNavigator from './HomeTabNavigator';
-import NewContractScreen from '@/screens/contract/NewContractScreen';
 import InputMethodScreen from '@/screens/contract/InputMethodScreen';
 import ExtractReviewScreen from '@/screens/contract/ExtractReviewScreen';
 import ContractPreviewScreen from '@/screens/contract/ContractPreviewScreen';
@@ -19,17 +18,10 @@ export default function MainNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: {backgroundColor: colors.background.primary},
+        contentStyle: {backgroundColor: '#020617'},
+        // screens themselves handle their own gradient bg
       }}>
       <Stack.Screen name="HomeTabs" component={HomeTabNavigator} />
-      <Stack.Screen
-        name="NewContract"
-        component={NewContractScreen}
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
       <Stack.Screen
         name="InputMethod"
         component={InputMethodScreen}

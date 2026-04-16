@@ -9,43 +9,51 @@ interface StatusConfig {
   label: string;
   color: string;
   backgroundColor: string;
+  dotColor: string;
 }
 
 const STATUS_CONFIG: Record<ContractStatus, StatusConfig> = {
   draft: {
     label: 'Draft',
-    color: colors.status.draft,
-    backgroundColor: colors.status.draftBg,
+    color: '#8B5CF6',
+    backgroundColor: 'transparent',
+    dotColor: '#8B5CF6',
   },
   generated: {
     label: 'Generated',
-    color: colors.status.generated,
-    backgroundColor: colors.status.generatedBg,
+    color: '#3B82F6',
+    backgroundColor: 'transparent',
+    dotColor: '#3B82F6',
   },
   signed_by_me: {
     label: 'Signed',
-    color: colors.status.signedByMe,
-    backgroundColor: colors.status.signedByMeBg,
+    color: '#3B82F6',
+    backgroundColor: 'transparent',
+    dotColor: '#3B82F6',
   },
   sent: {
     label: 'Sent',
-    color: colors.status.sent,
-    backgroundColor: colors.status.sentBg,
+    color: '#F59E0B',
+    backgroundColor: 'transparent',
+    dotColor: '#F59E0B',
   },
   viewed: {
     label: 'Viewed',
-    color: colors.status.viewed,
-    backgroundColor: colors.status.viewedBg,
+    color: '#F59E0B',
+    backgroundColor: 'transparent',
+    dotColor: '#F59E0B',
   },
   signed_by_other: {
     label: 'Signed ✓',
-    color: colors.status.signedByOther,
-    backgroundColor: colors.status.signedByOtherBg,
+    color: '#10B981',
+    backgroundColor: 'transparent',
+    dotColor: '#10B981',
   },
   completed: {
-    label: 'Completed',
-    color: colors.status.completed,
-    backgroundColor: colors.status.completedBg,
+    label: 'Complete',
+    color: '#10B981',
+    backgroundColor: 'transparent',
+    dotColor: '#10B981',
   },
 };
 
@@ -59,27 +67,23 @@ export function Badge({status, size = 'md', showDot = true}: BadgeProps) {
   const config = STATUS_CONFIG[status];
 
   return (
-    <View
-      style={[
-        styles.badge,
-        {backgroundColor: config.backgroundColor},
-        size === 'sm' && styles.badgeSm,
-      ]}>
+    <View style={[
+      styles.badge,
+      {backgroundColor: config.backgroundColor, borderColor: `${config.color}40`},
+      size === 'sm' && styles.badgeSm,
+    ]}>
       {showDot && (
-        <View
-          style={[
-            styles.dot,
-            {backgroundColor: config.color},
-            size === 'sm' && styles.dotSm,
-          ]}
-        />
+        <View style={[
+          styles.dot,
+          {backgroundColor: config.dotColor},
+          size === 'sm' && styles.dotSm,
+        ]} />
       )}
-      <Text
-        style={[
-          styles.label,
-          {color: config.color},
-          size === 'sm' && styles.labelSm,
-        ]}>
+      <Text style={[
+        styles.label,
+        {color: config.color},
+        size === 'sm' && styles.labelSm,
+      ]}>
         {config.label}
       </Text>
     </View>
@@ -94,6 +98,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[2] + 2,
     paddingVertical: spacing[1],
     borderRadius: borderRadius.full,
+    borderWidth: 1,
     alignSelf: 'flex-start',
   },
   badgeSm: {
@@ -101,14 +106,14 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  dotSm: {
     width: 5,
     height: 5,
     borderRadius: 2.5,
+  },
+  dotSm: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
   label: {
     fontSize: fontSize.xs,

@@ -60,14 +60,59 @@ export const contractsApi = {
 
   /**
    * Extract structured fields from raw input (text, image, file).
-   * Returns the newly created Contract (which includes extractedFields).
+   *
+   * Text  → JSON body { method: 'text', text }
+   * Image → multipart/form-data { method: 'image', file: <image> }
+   * PDF   → multipart/form-data { method: 'pdf',   file: <pdf>   }
    */
   extractFromInput: async (payload: CreateContractPayload): Promise<Contract> => {
-    const {data} = await apiClient.post<Record<string, unknown>>(
-      '/contracts/extract',
-      payload,
-    );
-    return normalizeContract(data);
+    // ── Text path: plain JSON ─────────────────────────────────────────────────
+    if (payload.method === 'text') {
+      const {data} = await apiClient.post<Record<string, unknown>>(
+        '/contracts/extract',
+        {method: 'text', text: payload.text},
+      );
+      return normalizeContract(data);
+    }
+
+    // ── Image path: multipart/form-data with the captured/picked image ───────
+    if (payload.imageUri) {
+      const formData = new FormData();
+      formData.append('method', 'image');
+      // React Native FormData accepts { uri, type, name } objects as file parts
+      formData.append('file', {
+        uri: payload.imageUri,
+        type: 'image/jpeg',
+        name: 'contract-image.jpg',
+      } as unknown as Blob);
+
+      const {data} = await apiClient.post<Record<string, unknown>>(
+        '/contracts/extract',
+        formData,
+        {headers: {'Content-Type': 'multipart/form-data'}},
+      );
+      return normalizeContract(data);
+    }
+
+    // ── PDF path: multipart/form-data with the picked document ───────────────
+    if (payload.fileUri) {
+      const formData = new FormData();
+      formData.append('method', 'pdf');
+      formData.append('file', {
+        uri: payload.fileUri,
+        type: 'application/pdf',
+        name: 'document.pdf',
+      } as unknown as Blob);
+
+      const {data} = await apiClient.post<Record<string, unknown>>(
+        '/contracts/extract',
+        formData,
+        {headers: {'Content-Type': 'multipart/form-data'}},
+      );
+      return normalizeContract(data);
+    }
+
+    throw new Error('Invalid extraction payload: provide text, imageUri, or fileUri');
   },
 
   /**
@@ -108,10 +153,11 @@ export const contractsApi = {
 
   /**
    * Create a shareable signing link for the other party.
+   * Email and name are optional — the link is shared manually by the user.
    */
   createSigningLink: async (
     id: string,
-    otherPartyEmail: string,
+    otherPartyEmail?: string,
     otherPartyName?: string,
   ): Promise<SigningLinkResponse> => {
     const {data} = await apiClient.post<{

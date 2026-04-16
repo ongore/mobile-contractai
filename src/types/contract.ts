@@ -42,8 +42,9 @@ export interface Contract {
 export interface CreateContractPayload {
   method: InputMethod;
   text?: string;
-  imageBase64?: string;
-  fileUri?: string;
+  imageUri?: string;    // local file:// URI used for multipart image upload
+  imageBase64?: string; // kept for backward compat but imageUri is preferred
+  fileUri?: string;     // local file:// URI for PDF upload
 }
 
 export interface GenerateContractPayload {

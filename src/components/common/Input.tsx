@@ -65,9 +65,10 @@ export function Input({
             rightIcon ? styles.inputWithRight : null,
             multiline && styles.inputMultiline,
           ]}
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.text.muted}
           multiline={multiline}
           textAlignVertical={multiline ? 'top' : 'auto'}
+          selectionColor={colors.accent}
           onFocus={e => {
             setFocused(true);
             rest.onFocus?.(e);
@@ -103,29 +104,30 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   label: {
-    color: colors.text.primary,
+    color: colors.text.secondary,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
+    letterSpacing: 0.1,
   },
   required: {
-    color: colors.danger,
+    color: colors.text.danger,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background.secondary,
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
   },
   inputContainerFocused: {
-    borderColor: colors.accent,
-    backgroundColor: colors.background.primary,
+    borderColor: 'rgba(124,58,237,0.6)',
+    backgroundColor: 'rgba(124,58,237,0.05)',
   },
   inputContainerError: {
-    borderColor: colors.danger,
-    backgroundColor: '#FEF2F2',
+    borderColor: 'rgba(239,68,68,0.5)',
+    backgroundColor: 'rgba(239,68,68,0.04)',
   },
   inputContainerMultiline: {
     alignItems: 'flex-start',
@@ -158,12 +160,12 @@ const styles = StyleSheet.create({
     paddingLeft: spacing[1],
   },
   error: {
-    color: colors.danger,
+    color: colors.text.danger,
     fontSize: fontSize.xs,
     lineHeight: 16,
   },
   hint: {
-    color: colors.muted,
+    color: colors.text.muted,
     fontSize: fontSize.xs,
     lineHeight: 16,
   },

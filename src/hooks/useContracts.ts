@@ -117,7 +117,7 @@ export function useCreateSigningLink() {
       otherPartyName,
     }: {
       id: string;
-      otherPartyEmail: string;
+      otherPartyEmail?: string;
       otherPartyName?: string;
     }) => contractsApi.createSigningLink(id, otherPartyEmail, otherPartyName),
     onSuccess: (_, variables) => {

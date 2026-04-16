@@ -28,7 +28,6 @@ export type AuthStackParamList = {
 
 export type MainStackParamList = {
   HomeTabs: NavigatorScreenParams<HomeTabsParamList>;
-  NewContract: undefined;
   InputMethod: {method: InputMethod};
   ExtractReview: {
     fields: ExtractedField[];
@@ -46,5 +45,5 @@ export type MainStackParamList = {
 
 export type HomeTabsParamList = {
   Contracts: undefined;
-  Account: undefined;
+  Account:   undefined;
 };

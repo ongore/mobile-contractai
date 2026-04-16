@@ -24,7 +24,7 @@ export function Card({
   style,
   elevated = false,
   padded = true,
-  activeOpacity = 0.85,
+  activeOpacity = 0.82,
 }: CardProps) {
   const cardStyles: ViewStyle[] = [
     styles.card,
@@ -35,10 +35,7 @@ export function Card({
 
   if (onPress) {
     return (
-      <TouchableOpacity
-        style={cardStyles}
-        onPress={onPress}
-        activeOpacity={activeOpacity}>
+      <TouchableOpacity style={cardStyles} onPress={onPress} activeOpacity={activeOpacity}>
         {children}
       </TouchableOpacity>
     );
@@ -49,15 +46,13 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
-  },
-  default: {
     borderWidth: 1,
-    borderColor: colors.border.light,
-    ...shadow.sm,
+    borderColor: 'rgba(255,255,255,0.07)',
   },
+  default: {},
   elevated: {
     ...shadow.lg,
   },

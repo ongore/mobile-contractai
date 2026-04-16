@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -20,7 +21,7 @@ import {MainStackParamList} from '@/navigation/types';
 import {useExtract} from '@/hooks/useContracts';
 import {InputMethod} from '@/types/contract';
 import {colors} from '@/theme/colors';
-import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
 type Props = {
@@ -29,7 +30,7 @@ type Props = {
 };
 
 const METHOD_LABELS: Record<InputMethod, string> = {
-  screenshot: 'Upload Screenshot',
+  screenshot: 'Upload Image or PDF',
   text: 'Paste Text',
   invoice: 'Import Invoice',
   camera: 'Scan Document',
@@ -47,44 +48,34 @@ export default function InputMethodScreen({navigation, route}: Props) {
 
   const isReady = (): boolean => {
     switch (method) {
-      case 'text':
-        return text.trim().length > 20;
-      case 'screenshot':
-        return imageUri !== null;
-      case 'invoice':
-        return fileUri !== null;
-      case 'camera':
-        return false; // camera not implemented in MVP
-      default:
-        return false;
+      case 'text': return text.trim().length > 20;
+      case 'screenshot': return imageUri !== null || fileUri !== null;
+      case 'invoice': return fileUri !== null;
+      case 'camera': return imageUri !== null;
+      default: return false;
     }
   };
 
   const handlePickImage = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert(
-        'Permission needed',
-        'Please allow photo library access to upload a screenshot.',
-      );
+      Alert.alert('Permission needed', 'Please allow photo library access to upload a screenshot.');
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       quality: 0.85,
       base64: true,
     });
-
-    if (result.canceled) {
-      return;
-    }
-
+    if (result.canceled) return;
     const asset = result.assets[0];
     if (asset) {
       setImageUri(asset.uri ?? null);
       setImageBase64(asset.base64 ?? null);
+      // Clear any PDF selection
+      setFileUri(null);
+      setFileName(null);
     }
   };
 
@@ -94,30 +85,71 @@ export default function InputMethodScreen({navigation, route}: Props) {
         type: 'application/pdf',
         copyToCacheDirectory: true,
       });
-      if (result.canceled) {
-        return;
-      }
+      if (result.canceled) return;
       const asset = result.assets[0];
       if (asset) {
         setFileUri(asset.uri);
         setFileName(asset.name ?? 'document.pdf');
+        // Clear any image selection
+        setImageUri(null);
+        setImageBase64(null);
       }
     } catch {
       Alert.alert('Error', 'Failed to pick document. Please try again.');
     }
   };
 
+  const handleCameraCapture = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(
+        'Camera permission needed',
+        'Please allow camera access to scan documents.',
+        [{text: 'OK'}],
+      );
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.9,
+      base64: true,
+    });
+    if (result.canceled) return;
+    const asset = result.assets[0];
+    if (asset) {
+      setImageUri(asset.uri ?? null);
+      setImageBase64(asset.base64 ?? null);
+    }
+  };
+
   const handleExtract = async () => {
     try {
-      // extractFromInput returns the full Contract (with id + extractedFields).
-      // useExtract.onSuccess already stores it as activeContract in the store.
-      const contract = await extract.mutateAsync({
-        method,
-        text: method === 'text' ? text : undefined,
-        imageBase64: method === 'screenshot' ? (imageBase64 ?? undefined) : undefined,
-        fileUri: method === 'invoice' ? (fileUri ?? undefined) : undefined,
-      });
+      // Build payload — the API layer converts these to the correct multipart/JSON request
+      let extractImageUri: string | undefined;
+      let extractFileUri: string | undefined;
+      let extractMethod: InputMethod = method;
 
+      if (method === 'camera') {
+        extractImageUri = imageUri ?? undefined;
+        extractMethod = 'screenshot'; // camera treated same as screenshot on backend
+      } else if (method === 'screenshot') {
+        if (fileUri) {
+          extractFileUri = fileUri;
+          extractMethod = 'invoice'; // PDF selected via upload screen → invoice path
+        } else {
+          extractImageUri = imageUri ?? undefined;
+        }
+      } else if (method === 'invoice') {
+        extractFileUri = fileUri ?? undefined;
+      }
+
+      const contract = await extract.mutateAsync({
+        method: extractMethod,
+        text: method === 'text' ? text : undefined,
+        imageUri: extractImageUri,
+        fileUri: extractFileUri,
+      });
       navigation.navigate('ExtractReview', {
         fields: contract.extractedFields,
         method,
@@ -126,8 +158,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
     } catch (err: any) {
       Alert.alert(
         'Extraction Failed',
-        err?.response?.data?.message ||
-          'We couldn\'t extract data from this input. Please try again or use a different method.',
+        err?.response?.data?.message || "We couldn't extract data from this input. Please try again.",
         [{text: 'OK'}],
       );
     }
@@ -136,34 +167,88 @@ export default function InputMethodScreen({navigation, route}: Props) {
   const renderContent = () => {
     switch (method) {
       case 'screenshot':
-        return (
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Selected image</Text>
-            {imageUri ? (
+        // Show image preview if image was picked
+        if (imageUri) {
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Selected image</Text>
               <View style={styles.imagePreview}>
                 <Image
                   source={{uri: imageUri}}
                   style={styles.previewImage}
                   resizeMode="contain"
                 />
-                <TouchableOpacity
-                  style={styles.changeButton}
-                  onPress={handlePickImage}>
-                  <Text style={styles.changeButtonText}>Change image</Text>
+                <View style={styles.changeRow}>
+                  <TouchableOpacity style={styles.changeButton} onPress={handlePickImage}>
+                    <Text style={styles.changeButtonText}>Change image</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.changeButton, styles.changeButtonAlt]} onPress={handlePickDocument}>
+                    <Icon name="file-pdf-box" size={14} color="#FCD34D" style={{marginRight: 4}} />
+                    <Text style={[styles.changeButtonText, {color: '#FCD34D'}]}>Switch to PDF</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          );
+        }
+
+        // Show PDF preview if PDF was picked
+        if (fileUri) {
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Selected document</Text>
+              <View style={styles.filePreview}>
+                <View style={styles.fileIcon}>
+                  <Icon name="file-pdf-box" size={28} color="#FCA5A5" />
+                </View>
+                <View style={styles.fileInfo}>
+                  <Text style={styles.fileName} numberOfLines={2}>{fileName}</Text>
+                  <Text style={styles.fileType}>PDF Document</Text>
+                </View>
+                <TouchableOpacity onPress={handlePickDocument}>
+                  <Icon name="pencil" size={16} color={'rgba(235,235,245,0.45)'} />
                 </TouchableOpacity>
               </View>
-            ) : (
-              <TouchableOpacity
-                style={styles.uploadZone}
-                onPress={handlePickImage}
-                activeOpacity={0.8}>
-                <Icon name="image-plus" size={40} color={colors.accent} />
-                <Text style={styles.uploadTitle}>Choose from library</Text>
-                <Text style={styles.uploadSubtitle}>
-                  Select a screenshot or photo of your agreement
-                </Text>
+              <TouchableOpacity style={styles.switchToImageButton} onPress={handlePickImage}>
+                <Icon name="image-outline" size={14} color="rgba(167,139,250,0.8)" />
+                <Text style={styles.switchToImageText}>Upload image instead</Text>
               </TouchableOpacity>
-            )}
+            </View>
+          );
+        }
+
+        // Nothing selected yet — show both options
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Choose how to upload</Text>
+            <TouchableOpacity style={styles.uploadZone} onPress={handlePickImage} activeOpacity={0.8}>
+              <View style={styles.uploadIconWrap}>
+                <Icon name="image-plus" size={32} color="#A78BFA" />
+              </View>
+              <Text style={styles.uploadTitle}>Upload Image</Text>
+              <Text style={styles.uploadSubtitle}>
+                Photo, screenshot, or any image of your agreement
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.orRow}>
+              <View style={styles.orLine} />
+              <Text style={styles.orText}>OR</Text>
+              <View style={styles.orLine} />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.uploadZone, styles.uploadZonePdf]}
+              onPress={handlePickDocument}
+              activeOpacity={0.8}>
+              <View style={[styles.uploadIconWrap, {backgroundColor: 'rgba(252,211,77,0.1)'}]}>
+                <Icon name="file-upload-outline" size={32} color="#FCD34D" />
+              </View>
+              <Text style={styles.uploadTitle}>Import PDF</Text>
+              <Text style={styles.uploadSubtitle}>
+                Select a PDF contract or document from your files
+              </Text>
+            </TouchableOpacity>
           </View>
         );
 
@@ -175,13 +260,12 @@ export default function InputMethodScreen({navigation, route}: Props) {
               style={styles.textArea}
               value={text}
               onChangeText={setText}
-              placeholder={
-                'Example:\n\nI\'m hiring Sarah Johnson as a freelance designer for my website redesign. She\'ll handle UI/UX for 3 pages. Payment is $1,500 upon completion, due by May 15th. Work starts April 20th.'
-              }
-              placeholderTextColor={colors.muted}
+              placeholder={"Example:\n\nI'm hiring Sarah Johnson as a freelance designer for my website redesign. She'll handle UI/UX for 3 pages. Payment is $1,500 upon completion, due by May 15th."}
+              placeholderTextColor={'rgba(235,235,245,0.45)'}
               multiline
               textAlignVertical="top"
               autoFocus
+              selectionColor={colors.accent}
             />
             <Text style={styles.charCount}>{text.length} characters</Text>
           </View>
@@ -194,24 +278,21 @@ export default function InputMethodScreen({navigation, route}: Props) {
             {fileUri ? (
               <View style={styles.filePreview}>
                 <View style={styles.fileIcon}>
-                  <Icon name="file-pdf-box" size={32} color={colors.danger} />
+                  <Icon name="file-pdf-box" size={28} color="#FCA5A5" />
                 </View>
                 <View style={styles.fileInfo}>
-                  <Text style={styles.fileName} numberOfLines={2}>
-                    {fileName}
-                  </Text>
+                  <Text style={styles.fileName} numberOfLines={2}>{fileName}</Text>
                   <Text style={styles.fileType}>PDF Document</Text>
                 </View>
                 <TouchableOpacity onPress={handlePickDocument}>
-                  <Icon name="pencil" size={18} color={colors.muted} />
+                  <Icon name="pencil" size={16} color={'rgba(235,235,245,0.45)'} />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity
-                style={styles.uploadZone}
-                onPress={handlePickDocument}
-                activeOpacity={0.8}>
-                <Icon name="file-upload-outline" size={40} color={colors.warning} />
+              <TouchableOpacity style={styles.uploadZone} onPress={handlePickDocument} activeOpacity={0.8}>
+                <View style={[styles.uploadIconWrap, {backgroundColor: 'rgba(252,211,77,0.1)'}]}>
+                  <Icon name="file-upload-outline" size={32} color="#FCD34D" />
+                </View>
                 <Text style={styles.uploadTitle}>Choose PDF</Text>
                 <Text style={styles.uploadSubtitle}>
                   Select an invoice or PDF document from your files
@@ -223,13 +304,34 @@ export default function InputMethodScreen({navigation, route}: Props) {
 
       case 'camera':
         return (
-          <View style={styles.cameraPlaceholder}>
-            <Icon name="camera-off-outline" size={56} color={colors.muted} />
-            <Text style={styles.cameraTitle}>Camera Coming Soon</Text>
-            <Text style={styles.cameraSubtitle}>
-              Document scanning via camera will be available in the next update.
-              Use "Upload Screenshot" or "Paste Text" for now.
-            </Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Document scan</Text>
+            {imageUri ? (
+              <View style={styles.imagePreview}>
+                <Image
+                  source={{uri: imageUri}}
+                  style={styles.previewImage}
+                  resizeMode="contain"
+                />
+                <TouchableOpacity style={styles.changeButton} onPress={handleCameraCapture}>
+                  <Icon name="camera-retake-outline" size={14} color={colors.accentMid} style={{marginRight: 4}} />
+                  <Text style={styles.changeButtonText}>Retake photo</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={[styles.uploadZone, styles.cameraZone]}
+                onPress={handleCameraCapture}
+                activeOpacity={0.8}>
+                <View style={[styles.uploadIconWrap, {backgroundColor: 'rgba(217,70,239,0.12)', width: 72, height: 72, borderRadius: 20}]}>
+                  <Icon name="camera-outline" size={36} color="#D946EF" />
+                </View>
+                <Text style={styles.uploadTitle}>Open Camera</Text>
+                <Text style={styles.uploadSubtitle}>
+                  Point your camera at any printed contract, invoice, or agreement to scan and extract its details
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         );
 
@@ -238,68 +340,71 @@ export default function InputMethodScreen({navigation, route}: Props) {
     }
   };
 
+  const pageSubtitle = () => {
+    switch (method) {
+      case 'text':
+        return "Describe your agreement in plain language and we'll structure it into a professional contract.";
+      case 'screenshot':
+        return "Upload a photo or image of your agreement, or import a PDF — we'll extract all the key details automatically.";
+      case 'invoice':
+        return "Import a PDF invoice and we'll convert it into a binding contract.";
+      case 'camera':
+        return 'Point your camera at any printed document — we\'ll scan and extract the contract details for you.';
+      default:
+        return '';
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={22} color={colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{METHOD_LABELS[method]}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={'#020617'} />
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={20} color={'rgba(235,235,245,0.60)'} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{METHOD_LABELS[method]}</Text>
+          <View style={styles.headerSpacer} />
+        </View>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <Text style={styles.pageSubtitle}>
-          {method === 'text'
-            ? 'Describe your agreement in plain language and we\'ll structure it into a professional contract.'
-            : method === 'screenshot'
-            ? 'Upload a screenshot of a deal discussion, invoice, or any agreement and we\'ll extract the details.'
-            : method === 'invoice'
-            ? 'Import a PDF invoice and we\'ll convert it into a binding contract.'
-            : 'Scan any printed document to extract contract details.'}
-        </Text>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <Text style={styles.pageSubtitle}>{pageSubtitle()}</Text>
+          {renderContent()}
+        </ScrollView>
 
-        {renderContent()}
-      </ScrollView>
-
-      {/* Bottom CTA */}
-      {method !== 'camera' && (
+        {/* Footer CTA */}
         <View style={styles.footer}>
           <TouchableOpacity
-            style={[
-              styles.extractButton,
-              !isReady() && styles.extractButtonDisabled,
-            ]}
+            style={[styles.extractButton, !isReady() && styles.extractButtonDisabled]}
             onPress={handleExtract}
             disabled={!isReady() || extract.isPending}
-            activeOpacity={0.9}>
+            activeOpacity={0.88}>
             {extract.isPending ? (
               <View style={styles.loadingRow}>
                 <ActivityIndicator color={colors.white} size="small" />
                 <Text style={styles.extractButtonText}>Extracting...</Text>
               </View>
             ) : (
-              <Text style={styles.extractButtonText}>
-                Extract Contract Data
-              </Text>
+              <Text style={styles.extractButtonText}>Extract Contract Data</Text>
             )}
           </TouchableOpacity>
         </View>
-      )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#020617',
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -307,22 +412,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: 'rgba(84,84,88,0.40)',
   },
   backButton: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.gray100,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(84,84,88,0.40)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
+    letterSpacing: -0.2,
   },
   headerSpacer: {
     width: 36,
@@ -332,41 +440,75 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[4],
   },
   pageSubtitle: {
-    color: colors.text.secondary,
+    color: 'rgba(235,235,245,0.45)',
     fontSize: fontSize.base,
-    lineHeight: 22,
+    lineHeight: 24,
     marginBottom: spacing[6],
   },
   section: {
     gap: spacing[3],
   },
   sectionLabel: {
-    color: colors.text.primary,
+    color: 'rgba(235,235,245,0.60)',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.1,
   },
   uploadZone: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.border.default,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.1)',
     borderStyle: 'dashed',
     borderRadius: borderRadius.xl,
-    padding: spacing[10],
+    padding: spacing[8],
     gap: spacing[3],
-    backgroundColor: colors.background.secondary,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  uploadZonePdf: {
+    borderColor: 'rgba(252,211,77,0.2)',
+  },
+  cameraZone: {
+    paddingVertical: spacing[10],
+    borderColor: 'rgba(217,70,239,0.2)',
+  },
+  uploadIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing[2],
   },
   uploadTitle: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
   },
   uploadSubtitle: {
-    color: colors.muted,
+    color: 'rgba(235,235,245,0.45)',
     fontSize: fontSize.sm,
     textAlign: 'center',
     lineHeight: 18,
     paddingHorizontal: spacing[4],
+  },
+  orRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingHorizontal: spacing[2],
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(84,84,88,0.40)',
+  },
+  orText: {
+    color: 'rgba(235,235,245,0.30)',
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold,
+    letterSpacing: 1,
   },
   imagePreview: {
     gap: spacing[3],
@@ -376,33 +518,56 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 260,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.gray100,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  changeRow: {
+    flexDirection: 'row',
+    gap: spacing[2],
   },
   changeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[2],
     borderRadius: borderRadius.full,
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.25)',
+  },
+  changeButtonAlt: {
+    backgroundColor: 'rgba(252,211,77,0.08)',
+    borderColor: 'rgba(252,211,77,0.2)',
   },
   changeButtonText: {
-    color: colors.accent,
+    color: colors.accentMid,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
   },
+  switchToImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    paddingVertical: spacing[2],
+  },
+  switchToImageText: {
+    color: 'rgba(167,139,250,0.8)',
+    fontSize: fontSize.sm,
+  },
   textArea: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1.5,
-    borderColor: colors.border.default,
+    borderColor: 'rgba(255,255,255,0.10)',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
     fontSize: fontSize.base,
-    color: colors.text.primary,
+    color: '#FFFFFF',
     lineHeight: 22,
     minHeight: 200,
     maxHeight: 360,
   },
   charCount: {
-    color: colors.muted,
+    color: 'rgba(235,235,245,0.45)',
     fontSize: fontSize.xs,
     textAlign: 'right',
   },
@@ -410,17 +575,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
-    backgroundColor: colors.background.secondary,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: 'rgba(84,84,88,0.40)',
   },
   fileIcon: {
-    width: 48,
-    height: 48,
+    width: 46,
+    height: 46,
     borderRadius: borderRadius.md,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: 'rgba(239,68,68,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -428,53 +595,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fileName: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
   fileType: {
-    color: colors.muted,
+    color: 'rgba(235,235,245,0.45)',
     fontSize: fontSize.xs,
     marginTop: 2,
-  },
-  cameraPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing[10],
-    gap: spacing[4],
-  },
-  cameraTitle: {
-    color: colors.text.primary,
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
-  },
-  cameraSubtitle: {
-    color: colors.muted,
-    fontSize: fontSize.base,
-    textAlign: 'center',
-    lineHeight: 22,
   },
   footer: {
     padding: spacing[5],
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
-    backgroundColor: colors.background.primary,
+    borderTopColor: 'rgba(84,84,88,0.40)',
+    backgroundColor: '#020617',
   },
   extractButton: {
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing[4],
+    backgroundColor: '#7C3AED',
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing[4] + 2,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadow.md,
+    shadowColor: '#7C3AED',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
   },
   extractButtonDisabled: {
-    opacity: 0.5,
+    opacity: 0.4,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   extractButtonText: {
     color: colors.white,
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.1,
   },
   loadingRow: {
     flexDirection: 'row',

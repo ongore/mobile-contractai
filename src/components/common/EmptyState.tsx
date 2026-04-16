@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import {colors} from '@/theme/colors';
-import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
 interface EmptyStateProps {
@@ -14,34 +14,23 @@ interface EmptyStateProps {
   illustration?: React.ReactNode;
 }
 
-export function EmptyState({
-  icon,
-  title,
-  subtitle,
-  ctaLabel,
-  onCta,
-  illustration,
-}: EmptyStateProps) {
+export function EmptyState({icon, title, subtitle, ctaLabel, onCta, illustration}: EmptyStateProps) {
   return (
     <View style={styles.container}>
       {illustration ?? (
         icon && (
           <View style={styles.iconContainer}>
-            <Icon name={icon} size={40} color={colors.accent} />
+            <Icon name={icon} size={36} color={colors.accentMid} />
           </View>
         )
       )}
 
       <Text style={styles.title}>{title}</Text>
-
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
 
       {ctaLabel && onCta && (
-        <TouchableOpacity
-          style={styles.ctaButton}
-          onPress={onCta}
-          activeOpacity={0.9}>
-          <Icon name="plus" size={18} color={colors.white} />
+        <TouchableOpacity style={styles.ctaButton} onPress={onCta} activeOpacity={0.88}>
+          <Icon name="plus" size={16} color={colors.white} />
           <Text style={styles.ctaText}>{ctaLabel}</Text>
         </TouchableOpacity>
       )}
@@ -59,40 +48,46 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: borderRadius['2xl'],
-    backgroundColor: colors.accentLight,
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    backgroundColor: 'rgba(59,130,246,0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing[2],
+    marginBottom: spacing[3],
   },
   title: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
     textAlign: 'center',
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   subtitle: {
-    color: colors.text.secondary,
-    fontSize: fontSize.base,
+    color: 'rgba(235,235,245,0.45)',
+    fontSize: fontSize.sm,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing[3],
+    backgroundColor: '#3B82F6',
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing[3] + 2,
     paddingHorizontal: spacing[6],
     marginTop: spacing[2],
-    ...shadow.md,
+    shadowColor: '#3B82F6',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 8,
   },
   ctaText: {
-    color: colors.white,
+    color: '#FFFFFF',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
   },

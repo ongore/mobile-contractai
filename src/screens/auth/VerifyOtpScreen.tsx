@@ -3,306 +3,288 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  ActivityIndicator,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
+  StatusBar,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {LinearGradient} from 'expo-linear-gradient';
+import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RouteProp} from '@react-navigation/native';
-import {AuthStackParamList} from '@/navigation/types';
-import {useVerifyOtp, useSignIn} from '@/hooks/useAuth';
-import {getApiErrorMessage} from '@/utils/apiError';
-import {colors} from '@/theme/colors';
+import {OnboardingStackParamList} from '@/navigation/types';
+import {useVerifyOtp, useResendOtp} from '@/hooks/useAuth';
 import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
 type Props = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'VerifyOtp'>;
-  route: RouteProp<AuthStackParamList, 'VerifyOtp'>;
+  navigation: NativeStackNavigationProp<OnboardingStackParamList, 'OnboardingStep2'>;
+  route: RouteProp<OnboardingStackParamList, 'OnboardingStep2'>;
 };
 
-const OTP_LENGTH = 6;
+const OTP_LEN = 6;
 
 export default function VerifyOtpScreen({navigation, route}: Props) {
   const {email} = route.params;
-  const [otp, setOtp] = useState<string[]>(new Array(OTP_LENGTH).fill(''));
-  const [activeIndex, setActiveIndex] = useState(0);
-  const inputRefs = useRef<(TextInput | null)[]>([]);
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LEN).fill(''));
+  const [activeIdx, setActiveIdx] = useState(0);
+  const inputRefs = useRef<Array<TextInput | null>>([]);
   const verifyOtp = useVerifyOtp();
-  const resend = useSignIn();
+  const resend    = useResendOtp();
 
-  const otpString = otp.join('');
+  const isComplete = otp.every(d => d !== '');
 
   useEffect(() => {
-    if (otpString.length === OTP_LENGTH && !otp.includes('')) {
-      handleVerify();
-    }
-  }, [otpString]);
+    setTimeout(() => inputRefs.current[0]?.focus(), 400);
+  }, []);
 
-  const handleKeyPress = (
-    index: number,
-    e: NativeSyntheticEvent<TextInputKeyPressEventData>,
-  ) => {
-    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-      const newOtp = [...otp];
-      newOtp[index - 1] = '';
-      setOtp(newOtp);
-      setActiveIndex(index - 1);
-      inputRefs.current[index - 1]?.focus();
+  const handleChange = (i: number, val: string) => {
+    const digits = val.replace(/\D/g, '');
+    if (!digits) return;
+    const first = digits[0];
+    const next = [...otp];
+    next[i] = first;
+    setOtp(next);
+    if (i < OTP_LEN - 1) {
+      inputRefs.current[i + 1]?.focus();
+      setActiveIdx(i + 1);
     }
   };
 
-  const handleChange = (index: number, value: string) => {
-    const digit = value.replace(/[^0-9]/g, '').slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = digit;
-    setOtp(newOtp);
-
-    if (digit && index < OTP_LENGTH - 1) {
-      setActiveIndex(index + 1);
-      inputRefs.current[index + 1]?.focus();
+  const handleKeyPress = (i: number, e: any) => {
+    if (e.nativeEvent.key === 'Backspace') {
+      if (otp[i]) {
+        const next = [...otp]; next[i] = ''; setOtp(next);
+      } else if (i > 0) {
+        const next = [...otp]; next[i - 1] = ''; setOtp(next);
+        inputRefs.current[i - 1]?.focus();
+        setActiveIdx(i - 1);
+      }
     }
   };
 
   const handleVerify = async () => {
-    const code = otp.join('');
-    if (code.length !== OTP_LENGTH) {
-      return;
-    }
-
+    const token = otp.join('');
     try {
-      await verifyOtp.mutateAsync({email, otp: code});
-      // Auth store updated in hook — RootNavigator will switch to MainStack
-    } catch (err: unknown) {
-      Alert.alert(
-        'Invalid Code',
-        getApiErrorMessage(
-          err,
-          'The code you entered is incorrect or has expired.',
-        ),
-        [{text: 'OK'}],
-      );
-      setOtp(new Array(OTP_LENGTH).fill(''));
-      setActiveIndex(0);
-      inputRefs.current[0]?.focus();
-    }
+      await verifyOtp.mutateAsync({email, token});
+    } catch {}
   };
 
   const handleResend = async () => {
-    try {
-      await resend.mutateAsync(email);
-      Alert.alert('Code Sent', 'A new verification code has been sent to your email.');
-    } catch (err: unknown) {
-      Alert.alert(
-        'Error',
-        getApiErrorMessage(err, 'Failed to resend code. Please try again.'),
-      );
-    }
+    try { await resend.mutateAsync({email}); } catch {}
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <View style={styles.content}>
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
+    <LinearGradient
+      colors={['#0D2247', '#020617', '#150D38']}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 1}}
+      style={s.root}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-          {/* Envelope icon */}
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>📧</Text>
-          </View>
+      <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
+        <KeyboardAvoidingView
+          style={s.kav}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={s.inner}>
 
-          <Text style={styles.heading}>Check your email</Text>
-          <Text style={styles.subheading}>
-            We sent a 6-digit code to{'\n'}
-            <Text style={styles.emailHighlight}>{email}</Text>
-          </Text>
-
-          {/* OTP boxes */}
-          <View style={styles.otpRow}>
-            {otp.map((digit, index) => (
-              <TextInput
-                key={index}
-                ref={ref => {
-                  inputRefs.current[index] = ref;
-                }}
-                style={[
-                  styles.otpBox,
-                  activeIndex === index && styles.otpBoxActive,
-                  digit ? styles.otpBoxFilled : null,
-                ]}
-                value={digit}
-                onChangeText={val => handleChange(index, val)}
-                onKeyPress={e => handleKeyPress(index, e)}
-                onFocus={() => setActiveIndex(index)}
-                keyboardType="number-pad"
-                maxLength={1}
-                selectTextOnFocus
-                caretHidden
-              />
-            ))}
-          </View>
-
-          {/* Verify button */}
-          <TouchableOpacity
-            style={[
-              styles.verifyButton,
-              (otpString.length !== OTP_LENGTH || verifyOtp.isPending) &&
-                styles.verifyButtonDisabled,
-            ]}
-            onPress={handleVerify}
-            disabled={otpString.length !== OTP_LENGTH || verifyOtp.isPending}
-            activeOpacity={0.85}>
-            {verifyOtp.isPending ? (
-              <ActivityIndicator color={colors.white} size="small" />
-            ) : (
-              <Text style={styles.verifyButtonText}>Verify Code</Text>
-            )}
-          </TouchableOpacity>
-
-          {/* Resend */}
-          <View style={styles.resendRow}>
-            <Text style={styles.resendLabel}>Didn't get a code? </Text>
+            {/* Back */}
             <TouchableOpacity
-              onPress={handleResend}
-              disabled={resend.isPending}>
-              <Text style={styles.resendLink}>
-                {resend.isPending ? 'Sending...' : 'Resend'}
-              </Text>
+              style={s.backBtn}
+              onPress={() => navigation.goBack()}
+              activeOpacity={0.65}>
+              <View style={s.backIconWrap}>
+                <Icon name="chevron-left" size={18} color="rgba(235,235,245,0.70)" />
+              </View>
             </TouchableOpacity>
+
+            {/* Email icon */}
+            <View style={s.emailIconWrap}>
+              <LinearGradient
+                colors={['#3B82F6', '#3B82F6']}
+                start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                style={s.emailIconGrad}>
+                <Icon name="email-outline" size={24} color="#fff" />
+              </LinearGradient>
+            </View>
+
+            <Text style={s.title}>Check your email</Text>
+            <Text style={s.sub}>
+              We sent a 6-digit code to{'\n'}
+              <Text style={s.emailText}>{email}</Text>
+            </Text>
+
+            {/* OTP boxes */}
+            <View style={s.otpRow}>
+              {otp.map((digit, i) => (
+                <TextInput
+                  key={i}
+                  ref={ref => {inputRefs.current[i] = ref;}}
+                  style={[
+                    s.otpBox,
+                    activeIdx === i && s.otpBoxActive,
+                    !!digit && s.otpBoxFilled,
+                  ]}
+                  value={digit}
+                  onChangeText={v => handleChange(i, v)}
+                  onKeyPress={e => handleKeyPress(i, e)}
+                  onFocus={() => setActiveIdx(i)}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  selectTextOnFocus
+                  caretHidden
+                  selectionColor="#3B82F6"
+                />
+              ))}
+            </View>
+
+            {/* Verify button */}
+            <TouchableOpacity
+              disabled={!isComplete || verifyOtp.isPending}
+              onPress={handleVerify}
+              activeOpacity={0.85}
+              style={[s.btnWrap, (!isComplete || verifyOtp.isPending) && s.btnDisabled]}>
+              <LinearGradient
+                colors={['#3B82F6', '#3B82F6']}
+                start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                style={s.btn}>
+                {verifyOtp.isPending
+                  ? <ActivityIndicator color="#fff" size="small" />
+                  : <Text style={s.btnText}>Verify Code</Text>}
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* Resend */}
+            <View style={s.resendRow}>
+              <Text style={s.resendLabel}>Didn't receive a code? </Text>
+              <TouchableOpacity onPress={handleResend} disabled={resend.isPending} activeOpacity={0.65}>
+                <Text style={s.resendLink}>
+                  {resend.isPending ? 'Sending…' : 'Resend'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={s.noteRow}>
+              <Icon name="clock-outline" size={11} color="rgba(235,235,245,0.25)" />
+              <Text style={s.noteText}>Code expires in 10 minutes</Text>
+            </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background.primary,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  content: {
+const BOX = 44;
+
+const s = StyleSheet.create({
+  root: {flex: 1},
+  safe: {flex: 1},
+  kav: {flex: 1},
+  inner: {
     flex: 1,
     paddingHorizontal: spacing[6],
-    paddingTop: spacing[4],
+    paddingTop: spacing[3],
   },
-  backButton: {
-    alignSelf: 'flex-start',
-    paddingVertical: spacing[2],
-    marginBottom: spacing[6],
+
+  backBtn: {marginBottom: spacing[6]},
+  backIconWrap: {
+    width: 36, height: 36, borderRadius: 11,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center', justifyContent: 'center',
   },
-  backText: {
-    color: colors.accent,
-    fontSize: fontSize.base,
-    fontWeight: fontWeight.medium,
+
+  emailIconWrap: {alignSelf: 'flex-start', marginBottom: spacing[5]},
+  emailIconGrad: {
+    width: 52, height: 52, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#3B82F6',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 8,
   },
-  iconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: borderRadius['2xl'],
-    backgroundColor: colors.accentLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[6],
-    alignSelf: 'center',
-  },
-  icon: {
-    fontSize: 32,
-  },
-  heading: {
-    color: colors.text.primary,
+
+  title: {
+    color: '#FFFFFF',
     fontSize: fontSize['3xl'],
-    fontWeight: fontWeight.bold,
-    letterSpacing: -0.5,
+    fontWeight: fontWeight.extrabold,
+    letterSpacing: -1.2,
     marginBottom: spacing[3],
-    textAlign: 'center',
   },
-  subheading: {
-    color: colors.text.secondary,
-    fontSize: fontSize.base,
+  sub: {
+    color: 'rgba(235,235,245,0.50)',
+    fontSize: fontSize.sm,
     lineHeight: 22,
-    textAlign: 'center',
     marginBottom: spacing[8],
   },
-  emailHighlight: {
-    color: colors.primary,
-    fontWeight: fontWeight.semibold,
-  },
+  emailText: {color: '#3B82F6', fontWeight: fontWeight.semibold},
+
+  // OTP
   otpRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing[3],
-    marginBottom: spacing[8],
+    justifyContent: 'space-between',
+    gap: spacing[2],
+    marginBottom: spacing[7],
   },
   otpBox: {
-    width: 48,
-    height: 56,
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
+    flex: 1, height: 56,
+    backgroundColor: 'rgba(15,23,42,0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
     borderRadius: borderRadius.lg,
     textAlign: 'center',
-    fontSize: fontSize.xl,
+    color: '#FFFFFF',
+    fontSize: 22,
     fontWeight: fontWeight.bold,
-    color: colors.text.primary,
-    backgroundColor: colors.background.secondary,
+    letterSpacing: -0.5,
   },
   otpBoxActive: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accentLight,
+    borderColor: '#3B82F6',
+    backgroundColor: 'rgba(59,130,246,0.08)',
   },
   otpBoxFilled: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accentLight,
+    borderColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: '#1E293B',
   },
-  verifyButton: {
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing[4],
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.accent,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 6,
+
+  // CTA
+  btnWrap: {
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
     marginBottom: spacing[5],
+    shadowColor: '#3B82F6',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  verifyButtonDisabled: {
-    opacity: 0.5,
+  btnDisabled: {opacity: 0.42, shadowOpacity: 0},
+  btn: {
+    paddingVertical: spacing[4] + 2,
+    alignItems: 'center', justifyContent: 'center',
   },
-  verifyButtonText: {
-    color: colors.white,
-    fontSize: fontSize.base,
-    fontWeight: fontWeight.semibold,
+  btnText: {
+    color: '#FFFFFF', fontSize: fontSize.base,
+    fontWeight: fontWeight.bold, letterSpacing: -0.2,
   },
+
   resendRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    marginBottom: spacing[4],
   },
-  resendLabel: {
-    color: colors.text.secondary,
-    fontSize: fontSize.sm,
-  },
+  resendLabel: {color: 'rgba(235,235,245,0.45)', fontSize: fontSize.sm},
   resendLink: {
-    color: colors.accent,
-    fontSize: fontSize.sm,
-    fontWeight: fontWeight.semibold,
+    color: '#3B82F6', fontSize: fontSize.sm, fontWeight: fontWeight.semibold,
   },
+
+  noteRow: {
+    flexDirection: 'row', justifyContent: 'center',
+    alignItems: 'center', gap: 5,
+  },
+  noteText: {color: 'rgba(235,235,245,0.25)', fontSize: 11},
 });

@@ -27,7 +27,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={22} color={colors.text.primary} />
+          <Icon name="arrow-left" size={22} color={'#FFFFFF'} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Contract Preview</Text>
@@ -39,7 +39,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
       <View style={styles.pdfContainer}>
         {loadError ? (
           <View style={styles.errorContainer}>
-            <Icon name="file-alert-outline" size={48} color={colors.muted} />
+            <Icon name="file-alert-outline" size={48} color={'rgba(235,235,245,0.45)'} />
             <Text style={styles.errorTitle}>Unable to Load PDF</Text>
             <Text style={styles.errorSubtitle}>{loadError}</Text>
           </View>
@@ -93,22 +93,22 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.gray900,
+    backgroundColor: '#020617',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#020617',
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: 'rgba(84,84,88,0.40)',
   },
   backButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.gray100,
+    backgroundColor: '#1C1C1E',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: colors.primary,
+    color: '#BF5AF2',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
   },
@@ -126,18 +126,18 @@ const styles = StyleSheet.create({
   },
   pdfContainer: {
     flex: 1,
-    backgroundColor: colors.gray800,
+    backgroundColor: '#020617',
   },
   pdf: {
     flex: 1,
     width: '100%',
-    backgroundColor: colors.gray800,
+    backgroundColor: '#020617',
   },
   pdfLoadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.gray900,
+    backgroundColor: '#020617',
     gap: spacing[4],
     zIndex: 10,
   },
@@ -163,11 +163,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomBar: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#020617',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: 'rgba(84,84,88,0.40)',
     gap: spacing[3],
   },
   bottomBarInfo: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   bottomBarText: {
-    color: colors.text.secondary,
+    color: 'rgba(235,235,245,0.60)',
     fontSize: fontSize.sm,
   },
   signButton: {

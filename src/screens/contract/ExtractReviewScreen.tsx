@@ -21,7 +21,7 @@ import {useGenerateContract} from '@/hooks/useContracts';
 import {useContractStore} from '@/store/contractStore';
 import {Input} from '@/components/common/Input';
 import {colors} from '@/theme/colors';
-import {spacing, borderRadius, shadow} from '@/theme/spacing';
+import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
 type Props = {
@@ -141,13 +141,14 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
     'Select type';
 
   return (
+    <View style={{flex: 1, backgroundColor: '#020617'}}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={22} color={colors.text.primary} />
+          <Icon name="arrow-left" size={22} color={'#FFFFFF'} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review Extracted Data</Text>
         <View style={styles.headerSpacer} />
@@ -176,7 +177,7 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
             <Icon
               name={showTypePicker ? 'chevron-up' : 'chevron-down'}
               size={20}
-              color={colors.muted}
+              color={'rgba(235,235,245,0.45)'}
             />
           </TouchableOpacity>
           {showTypePicker && (
@@ -364,13 +365,13 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -378,22 +379,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: 'rgba(84,84,88,0.40)',
   },
   backButton: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.gray100,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(84,84,88,0.40)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
+    letterSpacing: -0.2,
   },
   headerSpacer: {
     width: 36,
@@ -407,13 +411,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: spacing[3],
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(124,58,237,0.1)',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.2)',
   },
   infoBannerText: {
     flex: 1,
-    color: colors.accentDark,
+    color: colors.accentMid,
     fontSize: fontSize.sm,
     lineHeight: 18,
   },
@@ -421,32 +427,37 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   fieldLabel: {
-    color: colors.text.primary,
+    color: 'rgba(235,235,245,0.60)',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.1,
   },
   typeSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.background.secondary,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1.5,
-    borderColor: colors.border.default,
+    borderColor: 'rgba(255,255,255,0.10)',
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
   },
   typeSelectorText: {
-    color: colors.text.primary,
+    color: '#FFFFFF',
     fontSize: fontSize.base,
   },
   typeDropdown: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#0D0D1A',
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: 'rgba(84,84,88,0.40)',
     overflow: 'hidden',
-    ...shadow.md,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
   },
   typeOption: {
     flexDirection: 'row',
@@ -455,51 +466,60 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: 'rgba(84,84,88,0.40)',
   },
   typeOptionSelected: {
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(124,58,237,0.1)',
   },
   typeOptionText: {
-    color: colors.text.primary,
+    color: 'rgba(235,235,245,0.60)',
     fontSize: fontSize.base,
   },
   typeOptionTextSelected: {
-    color: colors.accent,
+    color: colors.accentMid,
     fontWeight: fontWeight.semibold,
   },
   formSection: {
     gap: spacing[4],
   },
   sectionTitle: {
-    color: colors.primary,
-    fontSize: fontSize.base,
+    color: 'rgba(235,235,245,0.60)',
+    fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
     marginBottom: spacing[1],
   },
   footer: {
     padding: spacing[5],
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
-    backgroundColor: colors.background.primary,
+    borderTopColor: 'rgba(84,84,88,0.40)',
+    backgroundColor: '#020617',
   },
   generateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing[4],
-    ...shadow.md,
+    backgroundColor: '#7C3AED',
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing[4] + 2,
+    shadowColor: '#7C3AED',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
   },
   generateButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   generateButtonText: {
     color: colors.white,
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.1,
   },
   loadingRow: {
     flexDirection: 'row',

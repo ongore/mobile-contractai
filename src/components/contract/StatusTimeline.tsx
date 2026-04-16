@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import {ContractStatus} from '@/types/contract';
 import {colors} from '@/theme/colors';
 import {spacing, borderRadius} from '@/theme/spacing';
@@ -23,13 +23,7 @@ const TIMELINE_STEPS: TimelineStep[] = [
 ];
 
 const STATUS_ORDER: ContractStatus[] = [
-  'draft',
-  'generated',
-  'signed_by_me',
-  'sent',
-  'viewed',
-  'signed_by_other',
-  'completed',
+  'draft', 'generated', 'signed_by_me', 'sent', 'viewed', 'signed_by_other', 'completed',
 ];
 
 interface StatusTimelineProps {
@@ -37,21 +31,12 @@ interface StatusTimelineProps {
   orientation?: 'horizontal' | 'vertical';
 }
 
-export function StatusTimeline({
-  currentStatus,
-  orientation = 'horizontal',
-}: StatusTimelineProps) {
+export function StatusTimeline({currentStatus, orientation = 'horizontal'}: StatusTimelineProps) {
   const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
-  const getStepState = (
-    index: number,
-  ): 'completed' | 'active' | 'upcoming' => {
-    if (index < currentIndex) {
-      return 'completed';
-    }
-    if (index === currentIndex) {
-      return 'active';
-    }
+  const getStepState = (index: number): 'completed' | 'active' | 'upcoming' => {
+    if (index < currentIndex) return 'completed';
+    if (index === currentIndex) return 'active';
     return 'upcoming';
   };
 
@@ -63,35 +48,31 @@ export function StatusTimeline({
           return (
             <View key={step.status} style={styles.verticalStep}>
               <View style={styles.verticalLeft}>
-                <View
-                  style={[
-                    styles.stepDot,
-                    state === 'completed' && styles.stepDotCompleted,
-                    state === 'active' && styles.stepDotActive,
-                    state === 'upcoming' && styles.stepDotUpcoming,
-                  ]}>
+                <View style={[
+                  styles.stepDot,
+                  state === 'completed' && styles.stepDotCompleted,
+                  state === 'active' && styles.stepDotActive,
+                  state === 'upcoming' && styles.stepDotUpcoming,
+                ]}>
                   {state === 'completed' ? (
-                    <Icon name="check" size={12} color={colors.white} />
+                    <Icon name="check" size={11} color={colors.white} />
                   ) : state === 'active' ? (
                     <View style={styles.stepDotInner} />
                   ) : null}
                 </View>
                 {index < TIMELINE_STEPS.length - 1 && (
-                  <View
-                    style={[
-                      styles.verticalConnector,
-                      state === 'completed' && styles.connectorCompleted,
-                    ]}
-                  />
+                  <View style={[
+                    styles.verticalConnector,
+                    state === 'completed' && styles.connectorCompleted,
+                  ]} />
                 )}
               </View>
               <View style={styles.verticalStepInfo}>
-                <Text
-                  style={[
-                    styles.stepLabel,
-                    state === 'active' && styles.stepLabelActive,
-                    state === 'upcoming' && styles.stepLabelUpcoming,
-                  ]}>
+                <Text style={[
+                  styles.stepLabel,
+                  state === 'active' && styles.stepLabelActive,
+                  state === 'upcoming' && styles.stepLabelUpcoming,
+                ]}>
                   {step.label}
                 </Text>
               </View>
@@ -111,44 +92,34 @@ export function StatusTimeline({
         const state = getStepState(index);
         return (
           <View key={step.status} style={styles.horizontalStep}>
-            {/* Connector */}
             {index > 0 && (
-              <View
-                style={[
-                  styles.horizontalConnector,
-                  state !== 'upcoming' && styles.connectorCompleted,
-                ]}
-              />
+              <View style={[
+                styles.horizontalConnector,
+                state !== 'upcoming' && styles.connectorCompleted,
+              ]} />
             )}
-
-            {/* Step node */}
             <View style={styles.horizontalStepContent}>
-              <View
-                style={[
-                  styles.stepCircle,
-                  state === 'completed' && styles.stepCircleCompleted,
-                  state === 'active' && styles.stepCircleActive,
-                  state === 'upcoming' && styles.stepCircleUpcoming,
-                ]}>
+              <View style={[
+                styles.stepCircle,
+                state === 'completed' && styles.stepCircleCompleted,
+                state === 'active' && styles.stepCircleActive,
+                state === 'upcoming' && styles.stepCircleUpcoming,
+              ]}>
                 {state === 'completed' ? (
-                  <Icon name="check" size={12} color={colors.white} />
+                  <Icon name="check" size={11} color={colors.white} />
                 ) : (
                   <Icon
                     name={step.icon}
-                    size={12}
-                    color={
-                      state === 'active' ? colors.accent : colors.muted
-                    }
+                    size={11}
+                    color={state === 'active' ? '#A78BFA' : '#334155'}
                   />
                 )}
               </View>
-              <Text
-                style={[
-                  styles.horizontalLabel,
-                  state === 'active' && styles.horizontalLabelActive,
-                  state === 'upcoming' && styles.horizontalLabelUpcoming,
-                ]}
-                numberOfLines={1}>
+              <Text style={[
+                styles.horizontalLabel,
+                state === 'active' && styles.horizontalLabelActive,
+                state === 'upcoming' && styles.horizontalLabelUpcoming,
+              ]} numberOfLines={1}>
                 {step.label}
               </Text>
             </View>
@@ -160,16 +131,11 @@ export function StatusTimeline({
 }
 
 const styles = StyleSheet.create({
-  // Horizontal
   horizontalContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
-    backgroundColor: colors.background.primary,
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.border.light,
   },
   horizontalStep: {
     flexDirection: 'row',
@@ -181,9 +147,9 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   horizontalConnector: {
-    width: 20,
+    width: 18,
     height: 1.5,
-    backgroundColor: colors.border.light,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     marginHorizontal: spacing[1],
   },
   stepCircle: {
@@ -194,30 +160,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepCircleCompleted: {
-    backgroundColor: colors.success,
+    backgroundColor: '#10B981',
   },
   stepCircleActive: {
-    backgroundColor: colors.accentLight,
-    borderWidth: 2,
-    borderColor: colors.accent,
+    backgroundColor: 'rgba(124,58,237,0.15)',
+    borderWidth: 1.5,
+    borderColor: '#7C3AED',
   },
   stepCircleUpcoming: {
-    backgroundColor: colors.gray100,
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   horizontalLabel: {
     fontSize: 9,
     fontWeight: fontWeight.semibold,
-    color: colors.text.secondary,
+    color: 'rgba(235,235,245,0.60)',
     textAlign: 'center',
     letterSpacing: 0.2,
   },
   horizontalLabelActive: {
-    color: colors.accent,
+    color: '#A78BFA',
   },
   horizontalLabelUpcoming: {
-    color: colors.muted,
+    color: '#334155',
   },
 
   // Vertical
@@ -241,47 +207,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepDotCompleted: {
-    backgroundColor: colors.success,
+    backgroundColor: '#10B981',
   },
   stepDotActive: {
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(124,58,237,0.15)',
     borderWidth: 2,
-    borderColor: colors.accent,
+    borderColor: '#7C3AED',
   },
   stepDotUpcoming: {
-    backgroundColor: colors.gray100,
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   stepDotInner: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.accent,
+    backgroundColor: '#7C3AED',
   },
   verticalConnector: {
     width: 1.5,
     height: 24,
-    backgroundColor: colors.border.light,
+    backgroundColor: 'rgba(255,255,255,0.07)',
     marginTop: 2,
   },
   connectorCompleted: {
-    backgroundColor: colors.success,
+    backgroundColor: '#10B981',
+    opacity: 0.6,
   },
   verticalStepInfo: {
     paddingBottom: spacing[4],
     paddingTop: 2,
   },
   stepLabel: {
-    color: colors.text.secondary,
+    color: 'rgba(235,235,245,0.60)',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
   },
   stepLabelActive: {
-    color: colors.accent,
+    color: '#A78BFA',
     fontWeight: fontWeight.bold,
   },
   stepLabelUpcoming: {
-    color: colors.muted,
+    color: '#334155',
   },
 });
