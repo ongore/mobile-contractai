@@ -28,3 +28,6 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
   }
   return fallback;
 }
+
+/** Alias for backwards-compatibility with new screens. */
+export const extractApiError = getApiErrorMessage;

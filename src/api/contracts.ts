@@ -25,7 +25,7 @@ function normalizeContract(raw: Record<string, unknown>): Contract {
   return {
     ...(raw as unknown as Contract),
     type: (
-      typeof raw.type === 'string' ? raw.type.toLowerCase() : raw.type
+      typeof raw.type === 'string' ? raw.type.toLowerCase() : 'general_agreement'
     ) as ContractType,
     status: (
       typeof raw.status === 'string' ? raw.status.toLowerCase() : raw.status
@@ -79,11 +79,12 @@ export const contractsApi = {
     if (payload.imageUri) {
       const formData = new FormData();
       formData.append('method', 'image');
-      // React Native FormData accepts { uri, type, name } objects as file parts
+      const imgExt = payload.imageUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+      const imgMime = imgExt === 'png' ? 'image/png' : imgExt === 'heic' ? 'image/heic' : 'image/jpeg';
       formData.append('file', {
         uri: payload.imageUri,
-        type: 'image/jpeg',
-        name: 'contract-image.jpg',
+        type: imgMime,
+        name: `contract-image.${imgExt}`,
       } as unknown as Blob);
 
       const {data} = await apiClient.post<Record<string, unknown>>(

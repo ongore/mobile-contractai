@@ -48,9 +48,7 @@ export default function SignatureScreen({navigation, route}: Props) {
       Alert.alert('Empty Signature', 'Please draw your signature before confirming.');
       return;
     }
-    const base64 = signature.includes('base64,')
-      ? signature.split('base64,')[1]
-      : signature;
+    const base64 = signature.split('base64,').pop() ?? signature;
     try {
       await saveSignature.mutateAsync({id: contractId, signatureBase64: base64});
       // Use replace so the modal is dismissed and SendLink takes its place in the stack

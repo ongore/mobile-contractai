@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -15,7 +9,13 @@ import AccountScreen from '@/screens/home/AccountScreen';
 import {HomeTabsParamList} from './types';
 import {fontWeight} from '@/theme/typography';
 
-// ── Custom tab bar ─────────────────────────────────────────────────────────
+const BG     = '#F7F5F2';
+const WHITE  = '#FFFFFF';
+const INK    = '#111111';
+const GRAY   = '#8C8C8C';
+const GRAY_L = '#E2DED8';
+const ORANGE = '#FF5C28';
+
 function CustomTabBar({state, navigation}: BottomTabBarProps) {
   const isContracts = state.index === 0;
   const isAccount   = state.index === 1;
@@ -30,56 +30,45 @@ function CustomTabBar({state, navigation}: BottomTabBarProps) {
       <View style={tb.topBorder} />
 
       <View style={tb.row}>
-
         {/* Contracts tab */}
-        <TouchableOpacity
-          style={tb.tabItem}
-          onPress={() => navigation.navigate('Contracts')}
-          activeOpacity={0.7}>
+        <TouchableOpacity style={tb.tabItem} onPress={() => navigation.navigate('Contracts')} activeOpacity={0.7}>
           {isContracts ? (
             <View style={tb.activeIconWrap}>
-              <Icon name="view-grid" size={22} color="#3B82F6" />
+              <Icon name="view-grid" size={22} color={ORANGE} />
             </View>
           ) : (
             <View style={tb.inactiveIconWrap}>
-              <Icon name="view-grid-outline" size={22} color="#475569" />
+              <Icon name="view-grid-outline" size={22} color={GRAY} />
             </View>
           )}
           <Text style={[tb.label, isContracts && tb.labelActive]}>ATELIER</Text>
         </TouchableOpacity>
 
-        {/* Center FAB — elevated square, blue→violet gradient */}
+        {/* Center FAB */}
         <View style={tb.fabSpace}>
-          <TouchableOpacity
-            style={tb.fabWrap}
-            onPress={handleNewContract}
-            activeOpacity={0.85}>
+          <TouchableOpacity style={tb.fabWrap} onPress={handleNewContract} activeOpacity={0.85}>
             <LinearGradient
-              colors={['#3B82F6', '#8B5CF6']}
+              colors={[ORANGE, '#FF8A50']}
               start={{x: 0, y: 0}} end={{x: 1, y: 1}}
               style={tb.fabGrad}>
-              <Icon name="plus" size={28} color="#fff" />
+              <Icon name="plus" size={28} color={WHITE} />
             </LinearGradient>
           </TouchableOpacity>
         </View>
 
         {/* Account tab */}
-        <TouchableOpacity
-          style={tb.tabItem}
-          onPress={() => navigation.navigate('Account')}
-          activeOpacity={0.7}>
+        <TouchableOpacity style={tb.tabItem} onPress={() => navigation.navigate('Account')} activeOpacity={0.7}>
           {isAccount ? (
             <View style={tb.activeIconWrap}>
-              <Icon name="account-circle" size={22} color="#3B82F6" />
+              <Icon name="account-circle" size={22} color={ORANGE} />
             </View>
           ) : (
             <View style={tb.inactiveIconWrap}>
-              <Icon name="account-circle-outline" size={22} color="#475569" />
+              <Icon name="account-circle-outline" size={22} color={GRAY} />
             </View>
           )}
           <Text style={[tb.label, isAccount && tb.labelActive]}>PROFILE</Text>
         </TouchableOpacity>
-
       </View>
 
       <View style={{height: Platform.OS === 'ios' ? 22 : 0}} />
@@ -87,7 +76,6 @@ function CustomTabBar({state, navigation}: BottomTabBarProps) {
   );
 }
 
-// ── Navigator ──────────────────────────────────────────────────────────────
 const Tab = createBottomTabNavigator<HomeTabsParamList>();
 
 export default function HomeTabNavigator() {
@@ -101,20 +89,14 @@ export default function HomeTabNavigator() {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────
 const tb = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 0, left: 0, right: 0,
     overflow: 'visible',
   },
-  bg: {
-    backgroundColor: 'rgba(2, 6, 23, 0.88)',
-  },
-  topBorder: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-  },
+  bg: {backgroundColor: WHITE},
+  topBorder: {height: 1, backgroundColor: GRAY_L},
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -123,16 +105,11 @@ const tb = StyleSheet.create({
     paddingBottom: 8,
   },
 
-  // Tab items
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 5,
-  },
+  tabItem: {flex: 1, alignItems: 'center', gap: 5},
   activeIconWrap: {
-    backgroundColor: 'rgba(59,130,246,0.15)',
+    backgroundColor: '#FFF0EB',
     borderWidth: 1,
-    borderColor: 'rgba(59,130,246,0.28)',
+    borderColor: 'rgba(255,92,40,0.25)',
     borderRadius: 12,
     paddingHorizontal: 20,
     paddingVertical: 7,
@@ -145,34 +122,22 @@ const tb = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: {
-    fontSize: 9,
-    fontWeight: fontWeight.bold,
-    letterSpacing: 0.9,
-    textTransform: 'uppercase',
-    color: '#475569',
-  },
-  labelActive: {color: '#3B82F6'},
+  label: {fontSize: 9, fontWeight: fontWeight.bold, letterSpacing: 0.9, textTransform: 'uppercase', color: GRAY},
+  labelActive: {color: ORANGE},
 
-  // Center FAB
-  fabSpace: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: -38,
-  },
+  fabSpace: {flex: 1, alignItems: 'center', marginTop: -38},
   fabWrap: {
     borderRadius: 18,
-    shadowColor: '#3B82F6',
-    shadowOffset: {width: 0, height: 10},
-    shadowOpacity: 0.55,
-    shadowRadius: 22,
-    elevation: 18,
+    shadowColor: ORANGE,
+    shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.40,
+    shadowRadius: 18,
+    elevation: 14,
   },
   fabGrad: {
-    width: 60, height: 60,
-    borderRadius: 18,
+    width: 60, height: 60, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.20)',
+    borderColor: 'rgba(255,255,255,0.30)',
   },
 });

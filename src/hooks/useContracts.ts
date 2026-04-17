@@ -79,7 +79,7 @@ export function useGenerateContract() {
     }) => contractsApi.generateContract(id, fields, type),
     onSuccess: data => {
       updateContract(data.contract.id, data.contract);
-      queryClient.invalidateQueries({queryKey: [QUERY_KEYS.CONTRACTS]});
+      queryClient.invalidateQueries({queryKey: [QUERY_KEYS.CONTRACT, data.contract.id]});
     },
   });
 }
@@ -120,7 +120,8 @@ export function useCreateSigningLink() {
       otherPartyEmail?: string;
       otherPartyName?: string;
     }) => contractsApi.createSigningLink(id, otherPartyEmail, otherPartyName),
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
+      updateContract(variables.id, data.contract);
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CONTRACT, variables.id],
       });

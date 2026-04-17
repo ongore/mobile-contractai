@@ -18,8 +18,7 @@ export default function MainNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: {backgroundColor: '#020617'},
-        // screens themselves handle their own gradient bg
+        contentStyle: {backgroundColor: '#F7F5F2'},
       }}>
       <Stack.Screen name="HomeTabs" component={HomeTabNavigator} />
       <Stack.Screen

@@ -1,4 +1,4 @@
-export {useSignIn, useVerifyOtp, useSignOut, useDeleteAccount} from './useAuth';
+export {useSendOtp, useResendOtp, useVerifyOtp, useCompleteProfile, useSignOut, useDeleteAccount} from './useAuth';
 export {
   useContracts,
   useContract,

@@ -251,7 +251,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
                   </TouchableOpacity>
                 </View>
               </View>
-              {(['sent', 'viewed'].includes(contract.status as ContractStatus)) && (
+              {(['signed_by_me', 'sent', 'viewed'].includes(contract.status as ContractStatus)) && (
                 <View style={styles.pollingIndicator}>
                   <ActivityIndicator color={colors.accent} size="small" style={{marginRight: 6}} />
                   <Text style={styles.pollingText}>Checking for signature updates...</Text>

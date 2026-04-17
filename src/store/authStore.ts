@@ -8,7 +8,12 @@ interface AuthState {
   session: AuthSession | null;
   isAuthenticated: boolean;
   hasSeenOnboarding: boolean;
+  /** True after verifyOtp when the user is brand-new — stays true until profile setup completes. */
+  needsProfileSetup: boolean;
+
   setAuth: (session: AuthSession) => void;
+  setProfileComplete: (name: string) => void;
+  updateUser: (updates: Partial<User>) => void;
   clearAuth: () => void;
   setHasSeenOnboarding: (value: boolean) => void;
 }
@@ -16,33 +21,58 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     set => ({
-      user: null,
-      session: null,
-      isAuthenticated: false,
-      hasSeenOnboarding: false,
+      user:               null,
+      session:            null,
+      isAuthenticated:    false,
+      hasSeenOnboarding:  false,
+      needsProfileSetup:  false,
+
       setAuth: (session: AuthSession) =>
         set({
-          user: session.user,
+          user:              session.user,
           session,
-          isAuthenticated: true,
+          isAuthenticated:   true,
+          needsProfileSetup: session.isNewUser,
         }),
+
+      setProfileComplete: (name: string) =>
+        set(state => ({
+          needsProfileSetup: false,
+          user: state.user ? { ...state.user, name } : state.user,
+        })),
+
+      updateUser: (updates: Partial<User>) =>
+        set(state => ({
+          user: state.user ? { ...state.user, ...updates } : state.user,
+        })),
+
       clearAuth: () =>
         set({
-          user: null,
-          session: null,
-          isAuthenticated: false,
+          user:              null,
+          session:           null,
+          isAuthenticated:   false,
+          needsProfileSetup: false,
         }),
+
       setHasSeenOnboarding: (value: boolean) =>
         set({hasSeenOnboarding: value}),
     }),
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persisted: any, version: number) => {
+        if (version === 0) {
+          return {...persisted, hasSeenOnboarding: false};
+        }
+        return persisted;
+      },
       partialize: state => ({
-        user: state.user,
-        session: state.session,
-        isAuthenticated: state.isAuthenticated,
+        user:              state.user,
+        session:           state.session,
+        isAuthenticated:   state.isAuthenticated,
         hasSeenOnboarding: state.hasSeenOnboarding,
+        needsProfileSetup: state.needsProfileSetup,
       }),
     },
   ),

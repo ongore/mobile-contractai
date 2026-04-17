@@ -11,11 +11,10 @@ interface ContractCardProps {
   onPress: () => void;
 }
 
-// Glass card style
-const GLASS = {
-  backgroundColor: 'rgba(15, 23, 42, 0.80)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
+const CARD_STYLE = {
+  backgroundColor: '#FFFFFF',
+  borderWidth: 1.5,
+  borderColor: '#E2DED8',
 } as const;
 
 type TK = 'service_agreement' | 'freelance_agreement' | 'payment_agreement' | 'general_agreement';
@@ -45,7 +44,7 @@ export function ContractCard({contract, onPress}: ContractCardProps) {
 
   return (
     <TouchableOpacity
-      style={[s.card, GLASS]}
+      style={[s.card, CARD_STYLE]}
       onPress={onPress}
       activeOpacity={0.65}
       accessibilityRole="button">
@@ -87,21 +86,21 @@ const s = StyleSheet.create({
   iconBox: {
     width: 46, height: 46,
     borderRadius: 14,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F7F5F2',
     borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   },
   body: {flex: 1, gap: 4},
   title: {
-    color: '#F8FAFC',
+    color: '#111111',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.15,
   },
   meta: {flexDirection: 'row', alignItems: 'center', gap: 5},
-  metaText: {color: '#475569', fontSize: 11, fontWeight: fontWeight.medium},
-  metaDot: {color: '#334155', fontSize: 11},
+  metaText: {color: '#8C8C8C', fontSize: 11, fontWeight: fontWeight.medium},
+  metaDot: {color: '#C0BAB2', fontSize: 11},
   badge: {
     borderRadius: 999,
     borderWidth: 1,

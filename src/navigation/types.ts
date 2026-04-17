@@ -1,27 +1,26 @@
 import type {NavigatorScreenParams} from '@react-navigation/native';
-import type {InputMethod, ExtractedField, ContractType} from '@/types/contract';
+import type {InputMethod, ExtractedField} from '@/types/contract';
 
 // ─── Root ────────────────────────────────────────────────────────────────────
 
 export type RootStackParamList = {
-  OnboardingStack: NavigatorScreenParams<OnboardingStackParamList>;
-  AuthStack: NavigatorScreenParams<AuthStackParamList>;
+  /** Pre-auth: onboarding slides + phone entry + OTP + profile setup */
+  PreAuthStack: NavigatorScreenParams<PreAuthStackParamList>;
+  /** Main app after authentication */
   MainStack: NavigatorScreenParams<MainStackParamList>;
 };
 
-// ─── Onboarding ──────────────────────────────────────────────────────────────
+// ─── Pre-Auth (Onboarding + Auth merged) ─────────────────────────────────────
 
-export type OnboardingStackParamList = {
-  Welcome: undefined;
-  OnboardingStep1: undefined;
-  OnboardingStep2: undefined;
-};
-
-// ─── Auth ─────────────────────────────────────────────────────────────────────
-
-export type AuthStackParamList = {
-  SignIn: undefined;
-  VerifyOtp: {email: string};
+export type PreAuthStackParamList = {
+  /** 3-slide feature walkthrough — skipped for returning users */
+  Onboarding: undefined;
+  /** Email entry — entry point for returning users */
+  EmailEntry: undefined;
+  /** 6-digit OTP verification — contact is email or phone (E.164) */
+  VerifyOtp: {contact: string; contactType: 'email' | 'phone'};
+  /** Name / profile setup for brand-new users */
+  ProfileSetup: undefined;
 };
 
 // ─── Main ────────────────────────────────────────────────────────────────────
