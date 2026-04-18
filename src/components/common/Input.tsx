@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   label: {
-    color: colors.text.secondary,
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
     letterSpacing: 0.1,
@@ -115,19 +115,19 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E2DED8',
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
   },
   inputContainerFocused: {
-    borderColor: 'rgba(124,58,237,0.6)',
-    backgroundColor: 'rgba(124,58,237,0.05)',
+    borderColor: '#FF5C28',
+    backgroundColor: '#FFFFFF',
   },
   inputContainerError: {
-    borderColor: 'rgba(239,68,68,0.5)',
-    backgroundColor: 'rgba(239,68,68,0.04)',
+    borderColor: '#DC2626',
+    backgroundColor: '#FFFFFF',
   },
   inputContainerMultiline: {
     alignItems: 'flex-start',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
     fontSize: fontSize.base,
-    color: colors.text.primary,
+    color: '#111111',
     lineHeight: 20,
   },
   inputWithLeft: {

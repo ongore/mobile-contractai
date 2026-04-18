@@ -146,8 +146,8 @@ export default function SendLinkScreen({navigation, route}: Props) {
                 style={[styles.actionButton, styles.shareButton]}
                 onPress={handleShare}
                 activeOpacity={0.8}>
-                <Icon name="share-variant" size={18} color={colors.white} />
-                <Text style={styles.actionButtonText}>Share</Text>
+                <Icon name="share-variant" size={18} color={'#FF5C28'} />
+                <Text style={[styles.actionButtonText, {color: '#FF5C28'}]}>Share</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -164,7 +164,7 @@ export default function SendLinkScreen({navigation, route}: Props) {
             ).map((step, i) => (
               <View key={i} style={styles.nextStep}>
                 <View style={styles.nextStepIcon}>
-                  <Icon name={step.icon} size={15} color={colors.accent} />
+                  <Icon name={step.icon} size={15} color={'#FF5C28'} />
                 </View>
                 <Text style={styles.nextStepText}>{step.text}</Text>
               </View>
@@ -179,14 +179,14 @@ export default function SendLinkScreen({navigation, route}: Props) {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor="#020617" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F5F2" />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={20} color={'rgba(235,235,245,0.60)'} />
+            <Icon name="arrow-left" size={20} color={'#FF5C28'} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Share Contract</Text>
           <View style={styles.headerSpacer} />
@@ -195,9 +195,15 @@ export default function SendLinkScreen({navigation, route}: Props) {
         {/* Body */}
         <View style={styles.body}>{renderBody()}</View>
 
-        {/* View Contract footer — only shown once link is ready */}
+        {/* Footer — only shown once link is ready */}
         {signingLink && (
           <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.doneButton}
+              onPress={() => navigation.navigate('HomeTabs', {screen: 'Contracts'})}
+              activeOpacity={0.8}>
+              <Text style={styles.doneButtonText}>Done</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.viewButton}
               onPress={handleViewContract}
@@ -215,7 +221,7 @@ export default function SendLinkScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   container: {
     flex: 1,
@@ -226,22 +232,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: '#FFF0EB',
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#FF5C28',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.2,
@@ -262,7 +268,7 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   loadingText: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.base,
   },
 
@@ -283,13 +289,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorTitle: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.3,
   },
   errorSubtitle: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     textAlign: 'center',
     lineHeight: 20,
@@ -298,7 +304,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.xl,
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[6],
@@ -337,35 +343,35 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   successSubtitle: {
-    color: 'rgba(235,235,245,0.55)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     lineHeight: 18,
   },
 
   // Link card
   linkCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.xl,
     padding: spacing[4],
     gap: spacing[3],
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
   },
   linkLabel: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     letterSpacing: 0.1,
   },
   linkBox: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: '#F7F5F2',
     borderRadius: borderRadius.lg,
     padding: spacing[3],
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: '#E2DED8',
   },
   linkText: {
-    color: colors.accentMid,
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     lineHeight: 16,
   },
@@ -379,23 +385,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: 'rgba(59,130,246,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(59,130,246,0.3)',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.lg,
     paddingVertical: spacing[3],
   },
   shareButton: {
-    backgroundColor: 'rgba(124,58,237,0.15)',
-    borderColor: 'rgba(124,58,237,0.3)',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#FF5C28',
   },
   actionButtonText: {
-    color: colors.white,
+    color: '#FFFFFF',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
   actionButtonTextCopied: {
-    color: colors.success,
+    color: '#FFFFFF',
   },
 
   // Next steps
@@ -403,7 +408,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   nextStepsTitle: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     letterSpacing: 0.1,
@@ -418,13 +423,13 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: 'rgba(59,130,246,0.10)',
+    backgroundColor: '#FFF0EB',
     alignItems: 'center',
     justifyContent: 'center',
   },
   nextStepText: {
     flex: 1,
-    color: 'rgba(235,235,245,0.55)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     lineHeight: 18,
   },
@@ -432,21 +437,36 @@ const styles = StyleSheet.create({
   // Footer
   footer: {
     padding: spacing[5],
+    gap: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(84,84,88,0.40)',
-    backgroundColor: '#020617',
+    borderTopColor: '#E2DED8',
+    backgroundColor: '#F7F5F2',
+  },
+  doneButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing[3] + 2,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E2DED8',
+  },
+  doneButtonText: {
+    color: '#8C8C8C',
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.medium,
   },
   viewButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.xl,
     paddingVertical: spacing[4] + 2,
-    shadowColor: '#7C3AED',
+    shadowColor: '#FF5C28',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.35,
     shadowRadius: 16,
     elevation: 10,
   },

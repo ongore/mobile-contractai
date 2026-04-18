@@ -107,7 +107,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
   if (isLoading && !contract) {
     return (
       <View style={styles.root}>
-        <StatusBar barStyle="light-content" backgroundColor={'#020617'} />
+        <StatusBar barStyle="dark-content" backgroundColor={'#F7F5F2'} />
         <SafeAreaView style={styles.container} edges={['top']}>
           <View style={styles.loadingContainer}>
             <ActivityIndicator color={colors.accent} size="large" />
@@ -122,7 +122,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={'#020617'} />
+      <StatusBar barStyle="dark-content" backgroundColor={'#F7F5F2'} />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
@@ -289,7 +289,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   container: {
     flex: 1,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   loadingText: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
   },
   header: {
@@ -309,9 +309,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.2,
@@ -365,26 +365,26 @@ const styles = StyleSheet.create({
   },
   contractTitle: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize['2xl'],
     fontWeight: fontWeight.bold,
     letterSpacing: -0.4,
     lineHeight: 30,
   },
   contractType: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
   },
   contractDate: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
   },
   section: {
     gap: spacing[3],
   },
   sectionTitle: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
     textTransform: 'uppercase',
@@ -392,11 +392,11 @@ const styles = StyleSheet.create({
     marginLeft: spacing[1],
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.xl,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
   },
   party: {
     flexDirection: 'row',
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   },
   partyDivider: {
     height: 1,
-    backgroundColor: 'rgba(84,84,88,0.40)',
+    backgroundColor: '#E2DED8',
     marginVertical: spacing[1],
   },
   partyAvatar: {
@@ -421,13 +421,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   partyRole: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     fontWeight: fontWeight.medium,
     marginBottom: 2,
   },
   partyValue: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
@@ -445,11 +445,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.xl,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
   },
   pdfIcon: {
     width: 46,
@@ -465,22 +465,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   pdfName: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
     letterSpacing: -0.1,
   },
   pdfSub: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     marginTop: 2,
   },
   linkBox: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.lg,
     padding: spacing[3],
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
     marginBottom: spacing[3],
   },
   linkText: {
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   linkDivider: {
     width: 1,
     height: 18,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: '#E2DED8',
   },
   pollingIndicator: {
     flexDirection: 'row',
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[1],
   },
   pollingText: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
   },
   downloadButton: {

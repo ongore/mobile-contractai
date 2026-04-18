@@ -27,7 +27,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={22} color={'#FFFFFF'} />
+          <Icon name="arrow-left" size={22} color={'#FF5C28'} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Contract Preview</Text>
@@ -39,7 +39,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
       <View style={styles.pdfContainer}>
         {loadError ? (
           <View style={styles.errorContainer}>
-            <Icon name="file-alert-outline" size={48} color={'rgba(235,235,245,0.45)'} />
+            <Icon name="file-alert-outline" size={48} color={'#8C8C8C'} />
             <Text style={styles.errorTitle}>Unable to Load PDF</Text>
             <Text style={styles.errorSubtitle}>{loadError}</Text>
           </View>
@@ -72,7 +72,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
           <Icon
             name="file-document-check-outline"
             size={18}
-            color={colors.success}
+            color={'#FF5C28'}
           />
           <Text style={styles.bottomBarText}>
             Review all pages before signing
@@ -93,22 +93,24 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    backgroundColor: '#FFF0EB',
+    borderWidth: 1,
+    borderColor: '#FF5C28',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -117,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#BF5AF2',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
   },
@@ -126,23 +128,23 @@ const styles = StyleSheet.create({
   },
   pdfContainer: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   pdf: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   pdfLoadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
     gap: spacing[4],
     zIndex: 10,
   },
   pdfLoadingText: {
-    color: 'rgba(255,255,255,0.7)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
   },
   errorContainer: {
@@ -153,21 +155,21 @@ const styles = StyleSheet.create({
     padding: spacing[8],
   },
   errorTitle: {
-    color: colors.white,
+    color: '#111111',
     fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
   },
   errorSubtitle: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     textAlign: 'center',
   },
   bottomBar: {
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(84,84,88,0.40)',
+    borderTopColor: '#E2DED8',
     gap: spacing[3],
   },
   bottomBarInfo: {
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   bottomBarText: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
   },
   signButton: {
@@ -184,10 +186,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: colors.accent,
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.lg,
     paddingVertical: spacing[4],
-    ...shadow.md,
+    shadowColor: '#FF5C28',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
   signButtonText: {
     color: colors.white,

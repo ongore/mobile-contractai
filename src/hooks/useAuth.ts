@@ -62,15 +62,16 @@ export function useVerifyOtp() {
 }
 
 /**
- * Complete profile setup (name) for a new user.
+ * Complete profile setup (name + optional email) for a new user.
  * Marks needsProfileSetup as false in the store.
  */
 export function useCompleteProfile() {
   const setProfileComplete = useAuthStore(s => s.setProfileComplete);
 
   return useMutation({
-    mutationFn: (name: string) => authApi.syncProfile(name),
-    onSuccess: (_user, name) => {
+    mutationFn: ({name, email}: {name: string; email?: string}) =>
+      authApi.syncProfile(name, email),
+    onSuccess: (_user, {name}) => {
       setProfileComplete(name);
     },
   });

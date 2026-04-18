@@ -44,10 +44,10 @@ export const authApi = {
   },
 
   /**
-   * Sync user profile (name, etc.) after sign-in. Requires auth token.
+   * Sync user profile (name + optional email) after sign-in. Requires auth token.
    */
-  syncProfile: async (name: string): Promise<User> => {
-    const {data} = await apiClient.post<User>('/auth/sync', {name});
+  syncProfile: async (name: string, email?: string): Promise<User> => {
+    const {data} = await apiClient.post<User>('/auth/sync', {name, ...(email ? {email} : {})});
     return data;
   },
 

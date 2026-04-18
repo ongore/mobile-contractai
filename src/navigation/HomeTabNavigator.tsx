@@ -41,7 +41,7 @@ function CustomTabBar({state, navigation}: BottomTabBarProps) {
               <Icon name="view-grid-outline" size={22} color={GRAY} />
             </View>
           )}
-          <Text style={[tb.label, isContracts && tb.labelActive]}>ATELIER</Text>
+          <Text style={[tb.label, isContracts && tb.labelActive]}>HOME</Text>
         </TouchableOpacity>
 
         {/* Center FAB */}

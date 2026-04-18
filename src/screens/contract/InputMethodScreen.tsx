@@ -150,6 +150,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
         imageUri: extractImageUri,
         fileUri: extractFileUri,
       });
+      console.log('[MOBILE] contract.extractedFields:', JSON.stringify(contract.extractedFields));
       navigation.navigate('ExtractReview', {
         fields: contract.extractedFields,
         method,
@@ -206,7 +207,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
                   <Text style={styles.fileType}>PDF Document</Text>
                 </View>
                 <TouchableOpacity onPress={handlePickDocument}>
-                  <Icon name="pencil" size={16} color={'rgba(235,235,245,0.45)'} />
+                  <Icon name="pencil" size={16} color={'#8C8C8C'} />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.switchToImageButton} onPress={handlePickImage}>
@@ -261,7 +262,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
               value={text}
               onChangeText={setText}
               placeholder={"Example:\n\nI'm hiring Sarah Johnson as a freelance designer for my website redesign. She'll handle UI/UX for 3 pages. Payment is $1,500 upon completion, due by May 15th."}
-              placeholderTextColor={'rgba(235,235,245,0.45)'}
+              placeholderTextColor={'#AAAAAA'}
               multiline
               textAlignVertical="top"
               autoFocus
@@ -285,7 +286,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
                   <Text style={styles.fileType}>PDF Document</Text>
                 </View>
                 <TouchableOpacity onPress={handlePickDocument}>
-                  <Icon name="pencil" size={16} color={'rgba(235,235,245,0.45)'} />
+                  <Icon name="pencil" size={16} color={'#8C8C8C'} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -357,12 +358,12 @@ export default function InputMethodScreen({navigation, route}: Props) {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={'#020617'} />
+      <StatusBar barStyle="dark-content" backgroundColor={'#F7F5F2'} />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={20} color={'rgba(235,235,245,0.60)'} />
+            <Icon name="arrow-left" size={20} color={'#8C8C8C'} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{METHOD_LABELS[method]}</Text>
           <View style={styles.headerSpacer} />
@@ -401,7 +402,7 @@ export default function InputMethodScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   container: {
     flex: 1,
@@ -412,22 +413,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.2,
@@ -440,7 +441,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[4],
   },
   pageSubtitle: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.base,
     lineHeight: 24,
     marginBottom: spacing[6],
@@ -449,7 +450,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   sectionLabel: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     letterSpacing: 0.1,
@@ -463,7 +464,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     padding: spacing[8],
     gap: spacing[3],
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: '#F7F5F2',
   },
   uploadZonePdf: {
     borderColor: 'rgba(252,211,77,0.2)',
@@ -482,12 +483,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   uploadTitle: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
   },
   uploadSubtitle: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     textAlign: 'center',
     lineHeight: 18,
@@ -502,10 +503,10 @@ const styles = StyleSheet.create({
   orLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(84,84,88,0.40)',
+    backgroundColor: '#E2DED8',
   },
   orText: {
-    color: 'rgba(235,235,245,0.30)',
+    color: '#AAAAAA',
     fontSize: fontSize.xs,
     fontWeight: fontWeight.semibold,
     letterSpacing: 1,
@@ -518,7 +519,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 260,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
   },
   changeRow: {
     flexDirection: 'row',
@@ -555,19 +556,19 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
   },
   textArea: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
     borderColor: 'rgba(255,255,255,0.10)',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
     fontSize: fontSize.base,
-    color: '#FFFFFF',
+    color: '#111111',
     lineHeight: 22,
     minHeight: 200,
     maxHeight: 360,
   },
   charCount: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     textAlign: 'right',
   },
@@ -575,11 +576,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
   },
   fileIcon: {
     width: 46,
@@ -595,20 +596,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fileName: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
   fileType: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     marginTop: 2,
   },
   footer: {
     padding: spacing[5],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(84,84,88,0.40)',
-    backgroundColor: '#020617',
+    borderTopColor: '#E2DED8',
+    backgroundColor: '#F7F5F2',
   },
   extractButton: {
     backgroundColor: '#7C3AED',

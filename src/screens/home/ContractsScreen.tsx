@@ -35,7 +35,7 @@ const GRAY_L   = '#E2DED8';
 const ORANGE   = '#FF5C28';
 const ORANGE_L = '#FFF0EB';
 
-const SIDE     = spacing[5];
+const SIDE     = 10;
 const CARD_GAP = 12;
 const SMALL_W  = (width - SIDE * 2 - CARD_GAP) / 2;
 
@@ -85,27 +85,18 @@ export default function ContractsScreen({navigation}: Props) {
       {/* ── TOP BAR ─────────────────────────────────── */}
       <SafeAreaView edges={['top']}>
         <View style={s.topBar}>
-          <View style={s.topBarSide} />
           <Image
             source={require('@/assets/clerra-logo.png')}
             style={s.logoImg}
             resizeMode="contain"
           />
-          <View style={s.topBarSide}>
-            <TouchableOpacity
-              style={s.iconBtn}
-              onPress={() => navigation.navigate('Settings')}
-              activeOpacity={0.7}>
-              <Icon name="cog-outline" size={20} color={INK} />
-            </TouchableOpacity>
-          </View>
         </View>
       </SafeAreaView>
 
       {/* ── GREETING ────────────────────────────────── */}
       <View style={s.greeting}>
-        <Text style={s.greetTitle}>Welcome {firstName}!</Text>
-        <Text style={s.greetSub}>Start your legal architecture.</Text>
+        <Text style={s.greetTitle}>Hey, {firstName}!</Text>
+        <Text style={s.greetSub}>What are you working on today?</Text>
       </View>
 
       {/* ── BENTO GRID ──────────────────────────────── */}
@@ -113,7 +104,7 @@ export default function ContractsScreen({navigation}: Props) {
 
         <TouchableOpacity style={s.heroCard} onPress={handleUploadScan} activeOpacity={0.82}>
           <LinearGradient
-            colors={['rgba(255,92,40,0.06)', 'transparent']}
+            colors={['#FF5C28', '#FF8C5A', '#FFAA7A']}
             start={{x: 0, y: 0}} end={{x: 1, y: 1}}
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
@@ -122,51 +113,45 @@ export default function ContractsScreen({navigation}: Props) {
             <Text style={s.heroBadgeText}>RECOMMENDED</Text>
           </View>
           <View style={s.heroTop}>
-            <LinearGradient
-              colors={[ORANGE, '#FF8A50']}
-              start={{x: 0, y: 0}} end={{x: 1, y: 1}}
-              style={s.heroIconGrad}>
+            <View style={s.heroIconSolid}>
               <Icon name="image-search-outline" size={28} color={WHITE} />
-            </LinearGradient>
+            </View>
           </View>
           <View style={s.heroBottom}>
-            <Text style={s.heroTitle}>Upload or Scan</Text>
-            <Text style={s.heroSub}>
+            <Text style={[s.heroTitle, {color: WHITE}]}>Upload or Scan</Text>
+            <Text style={[s.heroSub, {color: 'rgba(255,255,255,0.75)'}]}>
               Take a photo, pick an image, or import a PDF — our AI reads it instantly.
             </Text>
-          </View>
-          <View style={s.heroArrowBtn}>
-            <Icon name="arrow-right" size={15} color={ORANGE} />
           </View>
         </TouchableOpacity>
 
         <View style={s.smallRow}>
           <TouchableOpacity style={[s.smallCard, {width: SMALL_W}]} onPress={handleFromText} activeOpacity={0.82}>
             <LinearGradient
-              colors={['rgba(139,92,246,0.08)', 'transparent']}
+              colors={['#7C3AED', '#9F67FF', '#B899FF']}
               start={{x: 0, y: 0}} end={{x: 1, y: 1}}
               style={StyleSheet.absoluteFill}
               pointerEvents="none"
             />
-            <View style={[s.smallIconWrap, {backgroundColor: 'rgba(139,92,246,0.10)'}]}>
-              <Icon name="clipboard-text-outline" size={18} color="#8B5CF6" />
+            <View style={[s.smallIconWrap, {backgroundColor: 'rgba(255,255,255,0.20)'}]}>
+              <Icon name="clipboard-text-outline" size={18} color={WHITE} />
             </View>
-            <Text style={s.smallTitle}>Paste{'\n'}&amp; Draft</Text>
-            <Text style={s.smallSub}>MANUAL INPUT</Text>
+            <Text style={[s.smallTitle, {color: WHITE}]}>Paste {'&'} Draft</Text>
+            <Text style={[s.smallSub, {color: 'rgba(255,255,255,0.65)'}]}>MANUAL INPUT</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[s.smallCard, {width: SMALL_W}]} onPress={handleFromCamera} activeOpacity={0.82}>
             <LinearGradient
-              colors={['rgba(217,70,239,0.08)', 'transparent']}
+              colors={['#C026D3', '#D946EF', '#E879F9']}
               start={{x: 0, y: 0}} end={{x: 1, y: 1}}
               style={StyleSheet.absoluteFill}
               pointerEvents="none"
             />
-            <View style={[s.smallIconWrap, {backgroundColor: 'rgba(217,70,239,0.10)'}]}>
-              <Icon name="camera-outline" size={18} color="#D946EF" />
+            <View style={[s.smallIconWrap, {backgroundColor: 'rgba(255,255,255,0.20)'}]}>
+              <Icon name="camera-outline" size={18} color={WHITE} />
             </View>
-            <Text style={s.smallTitle}>Scan{'\n'}Document</Text>
-            <Text style={s.smallSub}>CAMERA</Text>
+            <Text style={[s.smallTitle, {color: WHITE}]}>Scan Document</Text>
+            <Text style={[s.smallSub, {color: 'rgba(255,255,255,0.65)'}]}>CAMERA</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -181,21 +166,35 @@ export default function ContractsScreen({navigation}: Props) {
         </View>
 
         <View style={s.insightCard}>
+          <LinearGradient
+            colors={['#0D2247', '#1A3460', '#0A1A38']}
+            start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+          {/* subtle glow */}
+          <LinearGradient
+            colors={['rgba(255,92,40,0.18)', 'transparent']}
+            start={{x: 1, y: 0}} end={{x: 0, y: 1}}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+
           <View style={s.insightTopRow}>
             <View>
               <View style={s.insightNumRow}>
-                <Text style={s.insightBig}>{total}</Text>
+                <Text style={[s.insightBig, {color: WHITE}]}>{total}</Text>
                 <Text style={s.insightBigUnit}> contracts</Text>
               </View>
-              <Text style={s.insightMetaLabel}>TOTAL CONTRACTS</Text>
+              <Text style={[s.insightMetaLabel, {color: 'rgba(255,255,255,0.45)'}]}>TOTAL CONTRACTS</Text>
               <View style={s.trendRow}>
-                <Icon name="trending-up" size={10} color="#16A34A" />
-                <Text style={s.trendText}>+{signed} signed</Text>
+                <Icon name="trending-up" size={10} color="#4ADE80" />
+                <Text style={[s.trendText, {color: '#4ADE80'}]}>+{signed} signed</Text>
               </View>
             </View>
 
             <View style={s.insightRight}>
-              <Text style={s.statusLabel}>STATUS</Text>
+              <Text style={[s.statusLabel, {color: 'rgba(255,255,255,0.45)'}]}>STATUS</Text>
               <View style={s.statusPill}>
                 <Text style={s.statusPillText}>
                   {pending > 0 ? 'Active' : signed > 0 ? 'Optimal' : 'Empty'}
@@ -207,23 +206,22 @@ export default function ContractsScreen({navigation}: Props) {
           <View style={s.chartOuter}>
             {bars.map((h, i) => (
               <View key={i} style={s.chartCol}>
-                <Text style={[s.chartDay, i === todayBar && s.chartDayActive]}>
+                <Text style={[s.chartDay, i === todayBar ? {color: ORANGE} : {color: 'rgba(255,255,255,0.35)'}]}>
                   {DAY_LABELS[i]}
                 </Text>
                 {i === todayBar ? (
                   <LinearGradient
                     colors={[ORANGE, '#FF8A50']}
                     start={{x: 0, y: 0}} end={{x: 0, y: 1}}
-                    style={[s.chartBar, {height: Math.max(Math.round(h * 52), 4)}]}
+                    style={[s.chartBar, {height: Math.max(Math.round(h * 52), 4),
+                      shadowColor: ORANGE, shadowOffset: {width: 0, height: 4},
+                      shadowOpacity: 0.6, shadowRadius: 8}]}
                   />
                 ) : (
-                  <View style={[
-                    s.chartBar,
-                    {
-                      height: Math.max(Math.round(h * 52), 4),
-                      backgroundColor: 'rgba(0,0,0,0.07)',
-                    },
-                  ]} />
+                  <View style={[s.chartBar, {
+                    height: Math.max(Math.round(h * 52), 4),
+                    backgroundColor: 'rgba(255,255,255,0.12)',
+                  }]} />
                 )}
               </View>
             ))}
@@ -297,11 +295,11 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SIDE,
+    paddingLeft: 20,
     paddingBottom: spacing[2],
     paddingTop: spacing[2],
   },
-  topBarSide: {width: 38, alignItems: 'flex-end'},
-  logoImg: {height: 32, width: 110},
+  logoImg: {height: 42, width: 76},
   iconBtn: {
     width: 38, height: 38, borderRadius: 12,
     backgroundColor: WHITE,
@@ -316,7 +314,8 @@ const s = StyleSheet.create({
 
   greeting: {
     paddingHorizontal: SIDE,
-    paddingTop: spacing[5],
+    paddingLeft: 20,
+    paddingTop: spacing[2],
     paddingBottom: spacing[6],
   },
   greetTitle: {
@@ -330,27 +329,28 @@ const s = StyleSheet.create({
 
   heroCard: {
     borderRadius: 20, padding: spacing[5], overflow: 'hidden',
-    backgroundColor: WHITE, borderWidth: 1.5, borderColor: GRAY_L,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.07, shadowRadius: 16, elevation: 4,
+    backgroundColor: ORANGE, borderWidth: 0,
+    shadowColor: ORANGE, shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.40, shadowRadius: 20, elevation: 10,
   },
   heroBadge: {
-    alignSelf: 'flex-start', backgroundColor: ORANGE_L,
-    borderWidth: 1, borderColor: 'rgba(255,92,40,0.25)',
+    alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)',
     borderRadius: 20, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 16,
   },
-  heroBadgeText: {color: ORANGE, fontSize: 9, fontWeight: fontWeight.bold, letterSpacing: 1},
+  heroBadgeText: {color: WHITE, fontSize: 9, fontWeight: fontWeight.bold, letterSpacing: 1},
   heroTop: {marginBottom: spacing[5]},
   heroIconGrad: {
     width: 56, height: 56, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: ORANGE, shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.35, shadowRadius: 12, elevation: 6,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.20, shadowRadius: 12, elevation: 6,
   },
-  heroArrowBtn: {
-    alignSelf: 'flex-start', backgroundColor: ORANGE_L,
-    borderWidth: 1, borderColor: 'rgba(255,92,40,0.25)',
-    borderRadius: 10, padding: 8, marginTop: 16,
+  heroIconSolid: {
+    width: 56, height: 56, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)',
   },
   heroBottom: {gap: 8},
   heroTitle: {color: INK, fontSize: fontSize.xl, fontWeight: fontWeight.extrabold, letterSpacing: -0.6},
@@ -359,9 +359,9 @@ const s = StyleSheet.create({
   smallRow: {flexDirection: 'row', gap: CARD_GAP},
   smallCard: {
     borderRadius: 20, padding: spacing[4], gap: spacing[3], overflow: 'hidden',
-    backgroundColor: WHITE, borderWidth: 1.5, borderColor: GRAY_L,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#7C3AED', borderWidth: 0,
+    shadowColor: '#7C3AED', shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35, shadowRadius: 14, elevation: 8,
   },
   smallIconWrap: {width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center'},
   smallTitle: {color: INK, fontSize: 13, fontWeight: fontWeight.bold, letterSpacing: -0.2},
@@ -381,9 +381,9 @@ const s = StyleSheet.create({
 
   insightCard: {
     borderRadius: 20, padding: spacing[5], overflow: 'hidden',
-    backgroundColor: WHITE, borderWidth: 1.5, borderColor: GRAY_L,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#0D2247', borderWidth: 0,
+    shadowColor: '#0D2247', shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.40, shadowRadius: 20, elevation: 10,
   },
   insightTopRow: {
     flexDirection: 'row', justifyContent: 'space-between',
@@ -399,10 +399,10 @@ const s = StyleSheet.create({
   statusLabel: {color: GRAY, fontSize: 9, fontWeight: fontWeight.bold, letterSpacing: 0.8, textTransform: 'uppercase'},
   statusPill: {
     borderRadius: 999, borderWidth: 1,
-    borderColor: 'rgba(16,185,129,0.3)', backgroundColor: 'rgba(16,185,129,0.08)',
+    borderColor: 'rgba(74,222,128,0.40)', backgroundColor: 'rgba(74,222,128,0.15)',
     paddingHorizontal: 10, paddingVertical: 4,
   },
-  statusPillText: {color: '#16A34A', fontSize: 10, fontWeight: fontWeight.bold},
+  statusPillText: {color: '#4ADE80', fontSize: 10, fontWeight: fontWeight.bold},
 
   chartOuter: {flexDirection: 'row', alignItems: 'flex-end', height: 72, gap: 5},
   chartCol: {flex: 1, alignItems: 'center', justifyContent: 'flex-end', height: 72, gap: 5},

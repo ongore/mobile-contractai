@@ -196,8 +196,8 @@ const s = StyleSheet.create({
     marginBottom: 28,
   },
   logoImg: {
-    height: 48,
-    aspectRatio: 711 / 392,
+    height: 40,
+    width: 73,
   },
 
   title: {

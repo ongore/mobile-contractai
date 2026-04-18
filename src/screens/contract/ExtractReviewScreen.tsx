@@ -64,6 +64,7 @@ function findFieldValue(fields: ExtractedField[], keys: string[]): string {
 
 export default function ExtractReviewScreen({navigation, route}: Props) {
   const {fields} = route.params;
+  console.log('[REVIEW] fields param:', JSON.stringify(fields));
   const generate = useGenerateContract();
   const activeContract = useContractStore(s => s.activeContract);
   const setActiveContract = useContractStore(s => s.setActiveContract);
@@ -80,14 +81,14 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      party1Name: findFieldValue(fields, ['party1', 'party_1', 'client', 'employer', 'buyer']),
-      party2Name: findFieldValue(fields, ['party2', 'party_2', 'contractor', 'freelancer', 'seller', 'vendor']),
-      serviceDescription: findFieldValue(fields, ['service', 'description', 'scope', 'work']),
-      paymentAmount: findFieldValue(fields, ['payment', 'amount', 'price', 'fee', 'cost', 'rate']),
-      startDate: findFieldValue(fields, ['start', 'from', 'begin', 'commencement']),
-      endDate: findFieldValue(fields, ['end', 'due', 'deadline', 'completion', 'expiry']),
-      deliverables: findFieldValue(fields, ['deliverable', 'output', 'milestone']),
-      terms: findFieldValue(fields, ['term', 'condition', 'clause', 'payment_term']),
+      party1Name: findFieldValue(fields, ['partyOneName', 'partyone', 'party1', 'party_1', 'client', 'employer', 'buyer']),
+      party2Name: findFieldValue(fields, ['partyTwoName', 'partytwo', 'party2', 'party_2', 'contractor', 'freelancer', 'seller', 'vendor']),
+      serviceDescription: findFieldValue(fields, ['serviceDescription', 'service', 'description', 'scope', 'work']),
+      paymentAmount: findFieldValue(fields, ['paymentAmount', 'payment', 'amount', 'price', 'fee', 'cost', 'rate']),
+      startDate: findFieldValue(fields, ['startDate', 'start', 'from', 'begin', 'commencement']),
+      endDate: findFieldValue(fields, ['endDate', 'end', 'due', 'deadline', 'completion', 'expiry']),
+      deliverables: findFieldValue(fields, ['deliverables', 'deliverable', 'output', 'milestone']),
+      terms: findFieldValue(fields, ['terms', 'term', 'condition', 'clause', 'payment_term']),
       contractType: 'service_agreement',
     },
   });
@@ -141,14 +142,14 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
     'Select type';
 
   return (
-    <View style={{flex: 1, backgroundColor: '#020617'}}>
+    <View style={{flex: 1, backgroundColor: '#F7F5F2'}}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={22} color={'#FFFFFF'} />
+          <Icon name="arrow-left" size={22} color={'#FF5C28'} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review Extracted Data</Text>
         <View style={styles.headerSpacer} />
@@ -160,7 +161,7 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
         showsVerticalScrollIndicator={false}>
         {/* Info banner */}
         <View style={styles.infoBanner}>
-          <Icon name="magic-staff" size={18} color={colors.accent} />
+          <Icon name="magic-staff" size={18} color={'#FF5C28'} />
           <Text style={styles.infoBannerText}>
             We extracted these details — edit anything that looks wrong before
             generating.
@@ -177,7 +178,7 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
             <Icon
               name={showTypePicker ? 'chevron-up' : 'chevron-down'}
               size={20}
-              color={'rgba(235,235,245,0.45)'}
+              color={'#8C8C8C'}
             />
           </TouchableOpacity>
           {showTypePicker && (
@@ -202,7 +203,7 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
                     {type.label}
                   </Text>
                   {selectedType === type.value && (
-                    <Icon name="check" size={16} color={colors.accent} />
+                    <Icon name="check" size={16} color={'#FF5C28'} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -379,22 +380,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: '#FFF0EB',
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#FF5C28',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.2,
@@ -411,15 +412,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: spacing[3],
-    backgroundColor: 'rgba(124,58,237,0.1)',
+    backgroundColor: '#FFF0EB',
     borderRadius: borderRadius.lg,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: 'rgba(124,58,237,0.2)',
+    borderColor: 'rgba(255,92,40,0.25)',
   },
   infoBannerText: {
     flex: 1,
-    color: colors.accentMid,
+    color: '#FF5C28',
     fontSize: fontSize.sm,
     lineHeight: 18,
   },
@@ -427,7 +428,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   fieldLabel: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     letterSpacing: 0.1,
@@ -436,28 +437,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: '#E2DED8',
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
   },
   typeSelectorText: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.base,
   },
   typeDropdown: {
-    backgroundColor: '#0D0D1A',
+    backgroundColor: '#FFFFFF',
     borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderWidth: 1.5,
+    borderColor: '#E2DED8',
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 10,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   typeOption: {
     flexDirection: 'row',
@@ -466,24 +467,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#F4F2EF',
   },
   typeOptionSelected: {
-    backgroundColor: 'rgba(124,58,237,0.1)',
+    backgroundColor: '#FFF0EB',
   },
   typeOptionText: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.base,
   },
   typeOptionTextSelected: {
-    color: colors.accentMid,
+    color: '#FF5C28',
     fontWeight: fontWeight.semibold,
   },
   formSection: {
     gap: spacing[4],
   },
   sectionTitle: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
     textTransform: 'uppercase',
@@ -493,20 +494,20 @@ const styles = StyleSheet.create({
   footer: {
     padding: spacing[5],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(84,84,88,0.40)',
-    backgroundColor: '#020617',
+    borderTopColor: '#E2DED8',
+    backgroundColor: '#F7F5F2',
   },
   generateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.xl,
     paddingVertical: spacing[4] + 2,
-    shadowColor: '#7C3AED',
+    shadowColor: '#FF5C28',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.35,
     shadowRadius: 16,
     elevation: 10,
   },

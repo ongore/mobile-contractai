@@ -88,12 +88,12 @@ export default function SignatureScreen({navigation, route}: Props) {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={'#020617'} />
+      <StatusBar barStyle="dark-content" backgroundColor={'#F7F5F2'} />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Icon name="close" size={20} color={'rgba(235,235,245,0.60)'} />
+            <Icon name="close" size={20} color={'#8C8C8C'} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Sign Contract</Text>
           <View style={styles.headerSpacer} />
@@ -104,7 +104,7 @@ export default function SignatureScreen({navigation, route}: Props) {
           {/* Instructions */}
           <View style={styles.instructions}>
             <View style={styles.instructionIcon}>
-              <Icon name="draw" size={20} color="#A78BFA" />
+              <Icon name="draw" size={20} color="#FF5C28" />
             </View>
             <View style={styles.instructionText}>
               <Text style={styles.instructionTitle}>Draw your signature</Text>
@@ -118,7 +118,7 @@ export default function SignatureScreen({navigation, route}: Props) {
           {/* Signature pad */}
           <View style={styles.signatureWrapper}>
             <View style={styles.signatureLabel}>
-              <Icon name="draw-pen" size={12} color={'rgba(235,235,245,0.45)'} />
+              <Icon name="draw-pen" size={12} color={'#8C8C8C'} />
               <Text style={styles.signatureLabelText}>Sign here</Text>
             </View>
             <SignatureCanvas
@@ -143,7 +143,7 @@ export default function SignatureScreen({navigation, route}: Props) {
 
           {/* Legal note */}
           <View style={styles.legalNote}>
-            <Icon name="shield-check-outline" size={13} color={'rgba(235,235,245,0.45)'} />
+            <Icon name="shield-check-outline" size={13} color={'#8C8C8C'} />
             <Text style={styles.legalNoteText}>
               By confirming, you agree this signature is legally binding under applicable
               e-signature laws.
@@ -157,7 +157,7 @@ export default function SignatureScreen({navigation, route}: Props) {
             style={styles.clearButton}
             onPress={handleClear}
             disabled={saveSignature.isPending}>
-            <Icon name="eraser" size={16} color={'rgba(235,235,245,0.60)'} />
+            <Icon name="eraser" size={16} color={'#8C8C8C'} />
             <Text style={styles.clearButtonText}>Clear</Text>
           </TouchableOpacity>
 
@@ -190,7 +190,7 @@ export default function SignatureScreen({navigation, route}: Props) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#F7F5F2',
   },
   container: {
     flex: 1,
@@ -201,22 +201,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(84,84,88,0.40)',
+    borderBottomColor: '#E2DED8',
   },
   backButton: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     letterSpacing: -0.2,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(124,58,237,0.12)',
+    backgroundColor: '#FFF0EB',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -246,14 +246,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   instructionTitle: {
-    color: '#FFFFFF',
+    color: '#111111',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
     marginBottom: 4,
     letterSpacing: -0.1,
   },
   instructionSub: {
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.sm,
     lineHeight: 18,
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: borderRadius.xl,
     borderWidth: 1.5,
-    borderColor: 'rgba(124,58,237,0.4)',
+    borderColor: 'rgba(255,92,40,0.4)',
     backgroundColor: '#ffffff',
     overflow: 'hidden',
     position: 'relative',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   },
   legalNoteText: {
     flex: 1,
-    color: 'rgba(235,235,245,0.45)',
+    color: '#8C8C8C',
     fontSize: fontSize.xs,
     lineHeight: 16,
   },
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     padding: spacing[5],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(84,84,88,0.40)',
-    backgroundColor: '#020617',
+    borderTopColor: '#E2DED8',
+    backgroundColor: '#F7F5F2',
   },
   clearButton: {
     flexDirection: 'row',
@@ -332,12 +332,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(84,84,88,0.40)',
+    borderColor: '#E2DED8',
   },
   clearButtonText: {
-    color: 'rgba(235,235,245,0.60)',
+    color: '#8C8C8C',
     fontSize: fontSize.base,
     fontWeight: fontWeight.medium,
   },
@@ -347,12 +347,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.xl,
     paddingVertical: spacing[4] + 2,
-    shadowColor: '#7C3AED',
+    shadowColor: '#FF5C28',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.35,
     shadowRadius: 14,
     elevation: 8,
   },
