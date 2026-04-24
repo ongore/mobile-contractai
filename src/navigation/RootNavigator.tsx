@@ -12,7 +12,7 @@ export default function RootNavigator() {
   const isAuthenticated   = useAuthStore(s => s.isAuthenticated);
   const needsProfileSetup = useAuthStore(s => s.needsProfileSetup);
 
-  const showMainApp = true; // DEV BYPASS — re-enable: isAuthenticated && !needsProfileSetup
+  const showMainApp = isAuthenticated && !needsProfileSetup;
 
   return (
     <NavigationContainer>

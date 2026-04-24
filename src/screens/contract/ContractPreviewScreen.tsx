@@ -70,7 +70,7 @@ export default function ContractPreviewScreen({navigation, route}: Props) {
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarInfo}>
           <Icon
-            name="file-document-check-outline"
+            name="file-eye-outline"
             size={18}
             color={'#FF5C28'}
           />

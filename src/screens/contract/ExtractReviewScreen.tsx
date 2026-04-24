@@ -19,6 +19,7 @@ import {MainStackParamList} from '@/navigation/types';
 import {ContractType, ExtractedField} from '@/types/contract';
 import {useGenerateContract} from '@/hooks/useContracts';
 import {useContractStore} from '@/store/contractStore';
+import {useAuthStore} from '@/store/authStore';
 import {Input} from '@/components/common/Input';
 import {colors} from '@/theme/colors';
 import {spacing, borderRadius} from '@/theme/spacing';
@@ -68,11 +69,20 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
   const generate = useGenerateContract();
   const activeContract = useContractStore(s => s.activeContract);
   const setActiveContract = useContractStore(s => s.setActiveContract);
+  const currentUser = useAuthStore(s => s.user);
 
   const [selectedType, setSelectedType] = useState<ContractType>(
     'service_agreement',
   );
   const [showTypePicker, setShowTypePicker] = useState(false);
+
+  // Party 1 is always the logged-in user.
+  // Party 2 is whoever the AI extracted — prefer partyTwoName, fall back to
+  // partyOneName (the AI sometimes puts the other person in slot 1 when the
+  // user refers to themselves as "I" without giving a name).
+  const aiParty1 = findFieldValue(fields, ['partyOneName']);
+  const aiParty2 = findFieldValue(fields, ['partyTwoName']);
+  const party2Default = aiParty2 || aiParty1;
 
   const {
     control,
@@ -81,8 +91,8 @@ export default function ExtractReviewScreen({navigation, route}: Props) {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      party1Name: findFieldValue(fields, ['partyOneName', 'partyone', 'party1', 'party_1', 'client', 'employer', 'buyer']),
-      party2Name: findFieldValue(fields, ['partyTwoName', 'partytwo', 'party2', 'party_2', 'contractor', 'freelancer', 'seller', 'vendor']),
+      party1Name: currentUser?.name ?? '',
+      party2Name: party2Default,
       serviceDescription: findFieldValue(fields, ['serviceDescription', 'service', 'description', 'scope', 'work']),
       paymentAmount: findFieldValue(fields, ['paymentAmount', 'payment', 'amount', 'price', 'fee', 'cost', 'rate']),
       startDate: findFieldValue(fields, ['startDate', 'start', 'from', 'begin', 'commencement']),

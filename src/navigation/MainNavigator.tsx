@@ -8,6 +8,7 @@ import ContractPreviewScreen from '@/screens/contract/ContractPreviewScreen';
 import SignatureScreen from '@/screens/contract/SignatureScreen';
 import SendLinkScreen from '@/screens/contract/SendLinkScreen';
 import ContractDetailScreen from '@/screens/contract/ContractDetailScreen';
+import PaywallScreen from '@/screens/paywall/PaywallScreen';
 import SettingsScreen from '@/screens/settings/SettingsScreen';
 import {colors} from '@/theme/colors';
 
@@ -66,6 +67,14 @@ export default function MainNavigator() {
         component={ContractDetailScreen}
         options={{
           presentation: 'card',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Paywall"
+        component={PaywallScreen}
+        options={{
+          presentation: 'modal',
           headerShown: false,
         }}
       />

@@ -37,6 +37,7 @@ export type MainStackParamList = {
   Signature: {contractId: string};
   SendLink: {contractId: string};
   ContractDetail: {contractId: string};
+  Paywall: undefined;
   Settings: undefined;
 };
 

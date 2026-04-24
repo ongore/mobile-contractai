@@ -6,6 +6,7 @@ import {LinearGradient} from 'expo-linear-gradient';
 import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import ContractsScreen from '@/screens/home/ContractsScreen';
 import AccountScreen from '@/screens/home/AccountScreen';
+import {useContracts} from '@/hooks/useContracts';
 import {HomeTabsParamList} from './types';
 import {fontWeight} from '@/theme/typography';
 
@@ -16,12 +17,20 @@ const GRAY   = '#8C8C8C';
 const GRAY_L = '#E2DED8';
 const ORANGE = '#FF5C28';
 
+const FREE_LIMIT = 1;
+
 function CustomTabBar({state, navigation}: BottomTabBarProps) {
   const isContracts = state.index === 0;
   const isAccount   = state.index === 1;
+  const {data: contracts} = useContracts();
 
   const handleNewContract = () => {
-    (navigation as any).getParent()?.navigate('InputMethod', {method: 'screenshot'});
+    const parent = (navigation as any).getParent();
+    if ((contracts?.length ?? 0) >= FREE_LIMIT) {
+      parent?.navigate('Paywall');
+    } else {
+      parent?.navigate('InputMethod', {method: 'screenshot'});
+    }
   };
 
   return (

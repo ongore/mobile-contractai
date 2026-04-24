@@ -99,7 +99,11 @@ export default function VerifyOtpScreen({navigation, route}: Props) {
   const handleVerifyWithToken = async (token: string) => {
     setApiError('');
     try {
-      await verifyOtp.mutateAsync({contact, token, contactType});
+      const session = await verifyOtp.mutateAsync({contact, token, contactType});
+      if (session.isNewUser) {
+        navigation.navigate('ProfileSetup');
+      }
+      // Returning users: RootNavigator switches to MainNavigator automatically.
     } catch (err) {
       setApiError(extractApiError(err, 'Invalid code. Please try again.'));
       setOtp(Array(OTP_LEN).fill(''));

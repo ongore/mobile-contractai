@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, StatusBar,
+  View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, StatusBar, Linking,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -8,6 +8,8 @@ import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import {MainStackParamList} from '@/navigation/types';
 import {useAuthStore} from '@/store/authStore';
 import {useDeleteAccount, useSignOut} from '@/hooks/useAuth';
+import {useRevenueCat} from '@/hooks/useRevenueCat';
+import {presentCustomerCenter} from '@/utils/paywall';
 import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
@@ -26,6 +28,7 @@ export default function SettingsScreen({navigation}: Props) {
   const user          = useAuthStore(s => s.user);
   const signOut       = useSignOut();
   const deleteAccount = useDeleteAccount();
+  const {isPro, restorePurchases} = useRevenueCat();
 
   const handleSignOut = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -64,6 +67,37 @@ export default function SettingsScreen({navigation}: Props) {
           </View>
         </View>
 
+        {/* Subscription */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Subscription</Text>
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.7}
+            onPress={async () => {
+              if (isPro) await presentCustomerCenter();
+              else navigation.navigate('Paywall');
+            }}>
+            <Icon name={isPro ? 'crown' : 'crown-outline'} size={20} color={isPro ? ORANGE : GRAY} />
+            <Text style={styles.menuLabel}>Clerra Pro</Text>
+            <Text style={styles.menuValue}>{isPro ? 'Active' : 'Upgrade'}</Text>
+            <Icon name="chevron-right" size={16} color={GRAY_L} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.7}
+            onPress={async () => {
+              const ok = await restorePurchases();
+              Alert.alert(
+                ok ? 'Purchases restored' : 'Nothing to restore',
+                ok ? 'Your Clerra Pro subscription is active.' : 'No active subscription was found for this account.',
+              );
+            }}>
+            <Icon name="restore" size={20} color={GRAY} />
+            <Text style={styles.menuLabel}>Restore Purchases</Text>
+            <Icon name="chevron-right" size={16} color={GRAY_L} />
+          </TouchableOpacity>
+        </View>
+
         {/* App settings */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>App</Text>
@@ -85,8 +119,8 @@ export default function SettingsScreen({navigation}: Props) {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Privacy</Text>
           {[
-            {icon: 'shield-lock-outline', label: 'Privacy Policy',   danger: false, onPress: () => {}},
-            {icon: 'file-document-outline', label: 'Terms of Service', danger: false, onPress: () => {}},
+            {icon: 'shield-lock-outline', label: 'Privacy Policy',   danger: false, onPress: () => Linking.openURL('https://clerra.app/privacy')},
+            {icon: 'file-document-outline', label: 'Terms of Use',    danger: false, onPress: () => Linking.openURL('https://clerra.app/terms')},
             {
               icon: 'delete-outline', label: 'Delete Account', danger: true,
               onPress: () => {

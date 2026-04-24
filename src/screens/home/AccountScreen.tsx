@@ -4,10 +4,13 @@ import {
   ScrollView, StatusBar, Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 import {useAuthStore} from '@/store/authStore';
 import {useSignOut} from '@/hooks/useAuth';
 import {useContracts} from '@/hooks/useContracts';
+import {MainStackParamList} from '@/navigation/types';
 import {spacing, borderRadius} from '@/theme/spacing';
 import {fontSize, fontWeight} from '@/theme/typography';
 
@@ -20,7 +23,7 @@ const ORANGE   = '#FF5C28';
 const ORANGE_L = '#FFF0EB';
 
 const APP_VERSION     = '1.0.0';
-const CONTRACT_LIMIT  = 10;
+const CONTRACT_LIMIT  = 1;
 
 const MENU: {icon: string; label: string; color: string; bg: string}[] = [
   {icon: 'bell-outline',        label: 'Notifications',     color: ORANGE,     bg: ORANGE_L},
@@ -30,6 +33,7 @@ const MENU: {icon: string; label: string; color: string; bg: string}[] = [
 ];
 
 export default function AccountScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
   const user    = useAuthStore(s => s.user);
   const signOut = useSignOut();
   const {data: contracts} = useContracts();
@@ -111,7 +115,10 @@ export default function AccountScreen() {
 
         {/* Upgrade banner */}
         {isAtLimit && (
-          <View style={s.upgradeBanner}>
+          <TouchableOpacity
+            style={s.upgradeBanner}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Paywall')}>
             <Icon name="crown-outline" size={16} color={ORANGE} />
             <View style={{flex: 1}}>
               <Text style={s.upgradeTitle}>Upgrade to Pro</Text>
@@ -120,7 +127,7 @@ export default function AccountScreen() {
             <View style={s.upgradePill}>
               <Text style={s.upgradePillText}>Upgrade →</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
 
         {/* Preferences */}

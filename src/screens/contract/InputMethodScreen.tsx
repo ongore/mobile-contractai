@@ -157,6 +157,10 @@ export default function InputMethodScreen({navigation, route}: Props) {
         rawInput: method === 'text' ? text : undefined,
       });
     } catch (err: any) {
+      if (err?.response?.status === 403 && err?.response?.data?.error === 'CONTRACT_LIMIT_REACHED') {
+        navigation.navigate('Paywall');
+        return;
+      }
       Alert.alert(
         'Extraction Failed',
         err?.response?.data?.message || "We couldn't extract data from this input. Please try again.",
@@ -612,14 +616,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F5F2',
   },
   extractButton: {
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF5C28',
     borderRadius: borderRadius.xl,
     paddingVertical: spacing[4] + 2,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#7C3AED',
+    shadowColor: '#FF5C28',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.35,
     shadowRadius: 16,
     elevation: 10,
   },

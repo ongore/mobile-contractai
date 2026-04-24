@@ -175,15 +175,15 @@ const styles = StyleSheet.create({
   horizontalLabel: {
     fontSize: 9,
     fontWeight: fontWeight.semibold,
-    color: 'rgba(235,235,245,0.60)',
+    color: '#111111',
     textAlign: 'center',
     letterSpacing: 0.2,
   },
   horizontalLabelActive: {
-    color: '#A78BFA',
+    color: '#7C3AED',
   },
   horizontalLabelUpcoming: {
-    color: '#334155',
+    color: '#9CA3AF',
   },
 
   // Vertical

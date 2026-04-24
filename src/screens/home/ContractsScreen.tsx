@@ -61,15 +61,27 @@ export default function ContractsScreen({navigation}: Props) {
     (c: Contract) => navigation.navigate('ContractDetail', {contractId: c.id}),
     [navigation],
   );
-  const handleUploadScan = () => navigation.navigate('InputMethod', {method: 'screenshot'});
-  const handleFromText   = () => navigation.navigate('InputMethod', {method: 'text'});
-  const handleFromCamera = () => navigation.navigate('InputMethod', {method: 'camera'});
 
   const firstName = user?.name?.split(' ')[0] ?? user?.phone ?? 'there';
 
   const total   = contracts?.length ?? 0;
-  const signed  = contracts?.filter(c => c.status === 'completed' || c.status === 'signed_by_other').length ?? 0;
+  const signed  = contracts?.filter(c => c.status === 'completed' || c.status === 'signed_by_me' || c.status === 'signed_by_other').length ?? 0;
   const pending = contracts?.filter(c => c.status === 'sent' || c.status === 'viewed').length ?? 0;
+
+  const FREE_LIMIT = 1;
+  const isAtLimit = total >= FREE_LIMIT;
+
+  const navigateOrPaywall = (method: 'screenshot' | 'text' | 'camera') => {
+    if (isAtLimit) {
+      navigation.navigate('Paywall');
+    } else {
+      navigation.navigate('InputMethod', {method});
+    }
+  };
+
+  const handleUploadScan = () => navigateOrPaywall('screenshot');
+  const handleFromText   = () => navigateOrPaywall('text');
+  const handleFromCamera = () => navigateOrPaywall('camera');
 
   // Real per-day contract counts (Mon–Sun)
   const dayCounts = DAY_LABELS.map((_, i) =>
@@ -89,6 +101,7 @@ export default function ContractsScreen({navigation}: Props) {
             source={require('@/assets/clerra-logo.png')}
             style={s.logoImg}
             resizeMode="contain"
+            accessibilityLabel="Clerra"
           />
         </View>
       </SafeAreaView>
@@ -104,7 +117,7 @@ export default function ContractsScreen({navigation}: Props) {
 
         <TouchableOpacity style={s.heroCard} onPress={handleUploadScan} activeOpacity={0.82}>
           <LinearGradient
-            colors={['#FF5C28', '#FF8C5A', '#FFAA7A']}
+            colors={['#E8380D', '#FF5C28', '#FF8040']}
             start={{x: 0, y: 0}} end={{x: 1, y: 1}}
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
@@ -128,7 +141,7 @@ export default function ContractsScreen({navigation}: Props) {
         <View style={s.smallRow}>
           <TouchableOpacity style={[s.smallCard, {width: SMALL_W}]} onPress={handleFromText} activeOpacity={0.82}>
             <LinearGradient
-              colors={['#7C3AED', '#9F67FF', '#B899FF']}
+              colors={['#4C1D95', '#7C3AED', '#A78BFA']}
               start={{x: 0, y: 0}} end={{x: 1, y: 1}}
               style={StyleSheet.absoluteFill}
               pointerEvents="none"
@@ -142,7 +155,7 @@ export default function ContractsScreen({navigation}: Props) {
 
           <TouchableOpacity style={[s.smallCard, {width: SMALL_W}]} onPress={handleFromCamera} activeOpacity={0.82}>
             <LinearGradient
-              colors={['#C026D3', '#D946EF', '#E879F9']}
+              colors={['#86198F', '#C026D3', '#E879F9']}
               start={{x: 0, y: 0}} end={{x: 1, y: 1}}
               style={StyleSheet.absoluteFill}
               pointerEvents="none"
@@ -167,14 +180,13 @@ export default function ContractsScreen({navigation}: Props) {
 
         <View style={s.insightCard}>
           <LinearGradient
-            colors={['#0D2247', '#1A3460', '#0A1A38']}
+            colors={['#020617', '#0F172A', '#1E293B']}
             start={{x: 0, y: 0}} end={{x: 1, y: 1}}
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
           />
-          {/* subtle glow */}
           <LinearGradient
-            colors={['rgba(255,92,40,0.18)', 'transparent']}
+            colors={['rgba(255,92,40,0.22)', 'rgba(124,58,237,0.10)', 'transparent']}
             start={{x: 1, y: 0}} end={{x: 0, y: 1}}
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
@@ -291,15 +303,12 @@ const s = StyleSheet.create({
   headerWrap: {backgroundColor: 'transparent'},
 
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SIDE,
-    paddingLeft: 20,
-    paddingBottom: spacing[2],
-    paddingTop: spacing[2],
+    paddingLeft: 14,
+    paddingRight: 20,
+    paddingBottom: spacing[3],
+    paddingTop: spacing[3],
   },
-  logoImg: {height: 42, width: 76},
+  logoImg: {height: 48, aspectRatio: 1.81},
   iconBtn: {
     width: 38, height: 38, borderRadius: 12,
     backgroundColor: WHITE,

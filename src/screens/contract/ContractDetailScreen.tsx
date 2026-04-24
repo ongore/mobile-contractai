@@ -164,7 +164,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
                 <View style={styles.partyInfo}>
                   <Text style={styles.partyRole}>Party 1 (You)</Text>
                   <Text style={styles.partyValue}>
-                    {contract.extractedFields.find(f => f.key === 'partyOneName')?.value ?? 'Not specified'}
+                    {contract.extractedFields.find(f => f.key === 'party1Name' || f.key === 'partyOneName')?.value ?? 'Not specified'}
                   </Text>
                 </View>
                 {contract.mySignature && (
@@ -186,7 +186,7 @@ export default function ContractDetailScreen({navigation, route}: Props) {
                   </Text>
                   <Text style={styles.partyValue}>
                     {contract.otherPartyEmail ??
-                      contract.extractedFields.find(f => f.key === 'partyTwoName')?.value ??
+                      contract.extractedFields.find(f => f.key === 'party2Name' || f.key === 'partyTwoName')?.value ??
                       'Not specified'}
                   </Text>
                 </View>
@@ -280,6 +280,15 @@ export default function ContractDetailScreen({navigation, route}: Props) {
               )}
             </TouchableOpacity>
           )}
+
+          {/* Done */}
+          <TouchableOpacity
+            style={styles.doneButton}
+            onPress={() => navigation.navigate('HomeTabs' as any, {screen: 'Contracts'})}
+            activeOpacity={0.88}>
+            <Icon name="check-circle-outline" size={16} color="#FFFFFF" />
+            <Text style={styles.doneButtonText}>Done</Text>
+          </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -534,6 +543,21 @@ const styles = StyleSheet.create({
   },
   downloadButtonText: {
     color: colors.accentMid,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+  },
+  doneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing[4],
+    backgroundColor: '#111111',
+    marginTop: spacing[3],
+  },
+  doneButtonText: {
+    color: '#FFFFFF',
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
   },
